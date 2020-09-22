@@ -21,3 +21,13 @@ You need `Python 3` and `pip` installed, then do:
 ... or just use the `docker-compose.yml` that does everything for you:
 
     docker-compose up
+
+## How does it look like
+
+### Plugin Overview
+
+![](img/plugin_overview.png)
+
+### SENEC Dashboard
+
+![](img/senec_plugin.png)
