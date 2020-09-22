@@ -10,3 +10,14 @@ Plugins for the following devices are inclueded (as I need them in my personal s
 
 * [SENEC.Home v3 Hybrid Duo](https://senec.com/de/produkte/senec-home-v3-hybrid)
 * [go-eCharger](https://go-e.co/produkte/go-echarger-home/)
+
+## How to run it
+You need `Python 3` and `pip` installed, then do:
+
+    pip3 install -r requirements.txt
+    cd src/
+    python3 main.py
+
+... or just use the `docker-compose.yml` that does everything for you:
+
+    docker-compose up
