@@ -1,0 +1,7 @@
+{% if icon is defined %}
+<svg class="bi" width="{{ icon.size }}" height="{{ icon.size }}" fill="currentColor">
+{% else %}
+<svg class="bi" width="48" height="48" fill="currentColor">
+{% endif %}
+    <use xlink:href="/static/{{ vars.pluginPackage }}/icons/bootstrap-icons.svg#{{ icon.name }}"/>
+</svg>

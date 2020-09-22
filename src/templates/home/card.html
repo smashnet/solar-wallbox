@@ -1,0 +1,17 @@
+<div class="flex-item">
+    <div class="card" style="width: 10rem;">
+        <div class="card-body">
+            {% for icon in card.icons %}
+                {% with icon=icon %}
+                    {% include vars.pluginPackage + '/icon.html' %}
+                {% endwith %}
+            {% endfor %}
+        <h5 class="card-title" id="{{ card.id }}"></h5>
+        {% if card.href %}
+        <a href="{{ card.href }}"><h6 class="card-subtitle mb-2 text-muted">{{ card.title }}</h6></a>
+        {% else %}
+        <h6 class="card-subtitle mb-2 text-muted">{{ card.title }}</h6>
+        {% endif %}
+        </div>
+    </div>
+</div>

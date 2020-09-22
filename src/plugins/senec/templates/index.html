@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" />
+    <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/senec.css" />
+    <title>SENEC Dashboard</title>
+{% endblock %}
+{% block header %}
+    {% include vars.pluginPackage + '/header.html' %}
+{% endblock %}
+{% block content %}
+        <main class="flex-fill">
+            {% for group in vars.res.cards %}
+            <div class="flex-container">
+            {% for card in group %}
+                {% with card=card %}
+                    {% include vars.pluginPackage + '/card.html' %}
+                {% endwith %}
+            {% endfor %}
+            </div>
+            {% endfor %}
+        </main>
+{% endblock %}
+{% block js %}
+    <script src="/static/{{ vars.pluginPackage }}/js/senec.js"></script>
+    <script src="/static/{{ vars.pluginPackage }}/js/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"></script>
+    <script src="/static/{{ vars.pluginPackage }}/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"></script>
+{% endblock %}
