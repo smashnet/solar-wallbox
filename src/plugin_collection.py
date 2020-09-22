@@ -59,7 +59,7 @@ class PluginCollection(object):
     def list_plugins(self):
         """Output a list of the plugin names
         """
-        return [(type(plugin).__name__, plugin.title, plugin.settings['url']) for plugin in self.plugins]
+        return [(type(plugin).__name__, plugin.title, plugin.settings['plugin_path']) for plugin in self.plugins]
 
     def get_plugins(self):
         """Return plugins

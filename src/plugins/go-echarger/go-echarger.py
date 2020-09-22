@@ -1,5 +1,5 @@
 """
-Read and decode data from go-eCharger wallbox.
+Read and write data of go-eCharger wallbox.
 """
 import os
 import logging
@@ -12,9 +12,12 @@ class GoEcharger(plugin_collection.Plugin):
     def __init__(self):
         super().__init__()
         self.title = "go-eCharger"
-        self.description = "Read and decode data from go-eCharger wallbox."
+        self.description = "Read and write data of go-eCharger wallbox."
+        self.pluginPackage = type(self).__module__.split('.')[1]
         self.settings = { # defaults
-            "url": "/goe"
+            "plugin_path": "/go-echarger",
+            "device_ip": "10.0.0.47",
+            "device_api_path": "/status"
         }
 
     def add_webserver(self, webserver):
@@ -27,13 +30,8 @@ class GoEcharger(plugin_collection.Plugin):
             log.debug(f"Settings: {self.settings}")
 
     def endpoint(self, req, resp):
-        resp.html = "go-eCharger"
-
-    def perform_operation(self, event):
-        return("Success!")
-
-    def on_success_callback(self, res):
-        print(f"Success callback: {res}")
-
-    def on_error_callback(self, res):
-        print(f"Error callback: {res}")
+        template_vars = {
+            "pluginPackage": self.pluginPackage
+        }
+        template_vars['name'] = type(self).__name__
+        resp.html = self.webserver.render_template("go-echarger/index.html", template_vars)

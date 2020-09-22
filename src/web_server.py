@@ -22,7 +22,7 @@ class WebServer:
         self.api.add_route("/", endpoint=self.__list_plugins)
         for plugin in self.plugins.get_plugins():
             plugin.add_webserver(self)
-            self.api.add_route(plugin.settings['url'], endpoint=plugin.endpoint)
+            self.api.add_route(plugin.settings['plugin_path'], endpoint=plugin.endpoint)
 
     def render_template(self, path, template_vars=None):
         template_vars = template_vars if template_vars else {}

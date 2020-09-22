@@ -19,9 +19,9 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         self.type = "source"
         self.pluginPackage = type(self).__module__.split('.')[1]
         self.settings = { # defaults
-            "url": "/senec",
-            "appliance_ip": "10.0.0.209",
-            "appliance_api": "/lala.cgi",
+            "plugin_path": "/senec",
+            "device_ip": "10.0.0.209",
+            "device_api_path": "/lala.cgi",
             "batteryCapacity": 10 # in kW
         }
 
@@ -122,7 +122,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
     }
     '''
     def __request_data_from_senec_appliance(self):
-        return requests.post("http://" + self.settings['appliance_ip'] + self.settings['appliance_api'], json={
+        return requests.post("http://" + self.settings['device_ip'] + self.settings['device_api_path'], json={
             "ENERGY":
                 {"STAT_STATE":"","STAT_STATE_DECODE":"","GUI_BAT_DATA_POWER":"","GUI_INVERTER_POWER":"",
                 "GUI_HOUSE_POW":"","GUI_GRID_POW":"","STAT_MAINT_REQUIRED":"","GUI_BAT_DATA_FUEL_CHARGE":"",

@@ -20,7 +20,7 @@ class PVExcess(plugin_collection.Plugin):
         self.type = "switcher"
         self.pluginPackage = type(self).__module__.split('.')[1]
         self.settings = { # defaults
-            "url": "/excess"
+            "plugin_path": "/excess"
         }
 
     def add_webserver(self, webserver):

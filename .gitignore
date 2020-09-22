@@ -1,10 +1,17 @@
+# project specific
+src/templates/go-echarger
+src/templates/pv-excess
+src/templates/senec
+src/static-assets/go-echarger
+src/static-assets/pv-excess
+src/static-assets/senec
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
 .DS_Store
-test.db
 
 # C extensions
 *.so
