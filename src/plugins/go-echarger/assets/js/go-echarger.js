@@ -63,19 +63,30 @@ function updateHTML() {
 }
 
 function updateHelperHTML(json) {
+    // Controls
+    let allowChargingToggle = document.querySelector('#allowChargingToggle');
+    let maxAmpereInput = document.querySelector('#maxAmpereInput');
+    
+    allowChargingToggle.checked = json['charging']['allow_charging'];
+    maxAmpereInput.value = json['charging']['max_ampere'];
+
+    // Current Charging Process
     let chargingStatus = document.querySelector('#chargingStatus');
     let chargingPower = document.querySelector('#chargingPower');
     let usedPhases = document.querySelector('#usedPhases');
     let energyCharged = document.querySelector('#energyCharged');
-
-    let allowChargingToggle = document.querySelector('#allowChargingToggle');
-    let maxAmpereInput = document.querySelector('#maxAmpereInput');
 
     chargingStatus.innerHTML = json['charging']['status'];
     chargingPower.innerHTML  = json['charging']['current_power'] + " kW";
     usedPhases.innerHTML  = json['charging']['pha_used'];
     energyCharged.innerHTML = json['charging']['energy'] + " kWh";
 
-    allowChargingToggle.checked = json['charging']['allow_charging'];
-    maxAmpereInput.value = json['charging']['max_ampere'];
+    // Device Information
+    let serialNumber = document.querySelector('#serialNumber');
+    let firmwareVersion = document.querySelector('#firmwareVersion');
+    let ipAddress = document.querySelector('#ipAddress');
+
+    serialNumber.innerHTML = json['device_serial'];
+    firmwareVersion.innerHTML = json['fw_version'];
+    ipAddress.innerHTML = json['device_ip'];
 }

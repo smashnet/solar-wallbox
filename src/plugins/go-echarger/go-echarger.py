@@ -113,6 +113,7 @@ class goEapi():
         self.data = {
             "device_serial" : status['sse'],
             "fw_version"    : status['fwv'],
+            "device_ip"     : self.device_ip,
             "charging"      : {
                 "allow_charging" : int(status['alw']), # 0/1
                 "status"        : charging_status_cases.get(status['car'], "Invalid charge status"),
