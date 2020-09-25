@@ -12,7 +12,9 @@ Plugins for the following devices are inclueded (as I need them in my personal s
 * [go-eCharger](https://go-e.co/produkte/go-echarger-home/)
 
 ## How to run it
-You need `Python 3` and `pip` installed, then do:
+Well, first create a config file `settings.json` in `src/config`. You can use the `sample_settings.json` that's already located there.
+
+Then, you need `Python 3` and `pip` installed, to do:
 
     pip3 install -r requirements.txt
     cd src/
