@@ -118,7 +118,7 @@ class goEapi():
                 "allow_charging" : int(status['alw']), # 0/1
                 "status"        : charging_status_cases.get(status['car'], "Invalid charge status"),
                 "max_ampere"    : int(status['amp']), # 6-32
-                "current_power" : int(status['nrg'][11]),
+                "current_power" : round(int(status['nrg'][11]) / 100.0, 3),
                 "pha_available"  : self.__get_number_of_available_phases(int(status['pha'])),
                 "pha_used"       : self.__get_number_of_used_phases(status['nrg']),
                 "energy"        : self.__dws_to_kWh(int(status['dws']))
