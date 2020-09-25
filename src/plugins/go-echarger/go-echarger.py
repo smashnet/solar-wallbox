@@ -16,11 +16,10 @@ class GoEcharger(plugin_collection.Plugin):
         self.title = "go-eCharger"
         self.description = "Read and write data of go-eCharger wallbox."
         self.pluginPackage = type(self).__module__.split('.')[1]
-        self.settings = { # defaults
+        self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/go-echarger",
-            "device_ip": "10.0.0.47"
+            "device_ip": "IP_OF_YOUR_ECHARGER" 
         }
-        self.wallbox = goEapi(self.settings['device_ip'])
 
     def add_webserver(self, webserver):
         self.webserver = webserver
@@ -30,6 +29,7 @@ class GoEcharger(plugin_collection.Plugin):
             log.info("Found custom config. Applying...")
             self.settings = settings[type(self).__name__]
             log.debug(f"Settings: {self.settings}")
+            self.wallbox = goEapi(self.settings['device_ip'])
 
     def endpoint(self, req, resp):
         # Path: plugin_path + /

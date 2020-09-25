@@ -18,11 +18,11 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         self.description = "Read and decode energy data from SENEC Home V3 Hybrid appliances."
         self.type = "source"
         self.pluginPackage = type(self).__module__.split('.')[1]
-        self.settings = { # defaults
+        self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/senec",
-            "device_ip": "10.0.0.209",
+            "device_ip": "IP_OF_YOUR_SENEC_DEVICE",
             "device_api_path": "/lala.cgi",
-            "batteryCapacity": 10 # in kW
+            "batteryCapacity": 10 # in kWh
         }
 
     def add_webserver(self, webserver):

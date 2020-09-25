@@ -19,7 +19,7 @@ class PVExcess(plugin_collection.Plugin):
         self.description = "Read and decode energy data from SENEC Home V3 Hybrid appliances."
         self.type = "switcher"
         self.pluginPackage = type(self).__module__.split('.')[1]
-        self.settings = { # defaults
+        self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/excess"
         }
 

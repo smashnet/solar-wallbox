@@ -5,6 +5,7 @@ src/templates/senec
 src/static-assets/go-echarger
 src/static-assets/pv-excess
 src/static-assets/senec
+src/config/settings.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
