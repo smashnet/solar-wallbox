@@ -1,6 +1,7 @@
 window.addEventListener('DOMContentLoaded', function () {
+    updateHTML();
     setInterval(() => {
-        updateHTML()
+        updateHTML();
     }, 2000);
 });
 
