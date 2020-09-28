@@ -28,8 +28,5 @@ Then, you need `Python 3` and `pip` installed, to do:
 
 ### Plugin Overview
 
-![](img/plugin_overview.png)
-
-### SENEC Dashboard
-
-![](img/senec_plugin.png)
+<img src="img/plugin_overview.png" width="380" />
+<img src="img/senec_plugin.png" width="380" style="margin-left: 20px;" />
