@@ -31,8 +31,13 @@ Then, you need `Python 3` and `pip` installed, to do:
         <td>
             <img src="img/plugin_overview.png" width="380" />
         </td>
+    </tr>
+    <tr>
         <td>
-            <img src="img/senec_plugin.png" width="380" style="margin-left: 20px;" />
+            <img src="img/senec_plugin.png" width="380" />
+        </td>
+        <td>
+            <img src="img/echarger_plugin.png" width="380" />
         </td>
     </tr>
 </table>
