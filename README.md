@@ -4,7 +4,7 @@ For the time being, this is a project to help me toggle my [go-eCharger](https:/
 Functionality to access the photovoltaic system and the wallbox is organized in plugins to make this as extensible as possible.
 
 ## Status
-At the moment this is rather a half-working prototype. However, I appreciate any feedback and hope this will also be useful for others :)
+At the moment this is a working prototype without automation. However, I appreciate any feedback and hope this will also be useful for others :)
 
 Plugins for the following devices are inclueded (as I need them in my personal scenario):
 
