@@ -26,7 +26,13 @@ Then, you need `Python 3` and `pip` installed, to do:
 
 ## How does it look like
 
-### Plugin Overview
-
-<img src="img/plugin_overview.png" width="380" />
-<img src="img/senec_plugin.png" width="380" style="margin-left: 20px;" />
+<table>
+    <tr>
+        <td>
+            <img src="img/plugin_overview.png" width="380" />
+        </td>
+        <td>
+            <img src="img/senec_plugin.png" width="380" style="margin-left: 20px;" />
+        </td>
+    </tr>
+</table>
