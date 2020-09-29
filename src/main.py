@@ -19,7 +19,7 @@ if __name__ == "__main__":
         settings = json.loads(data)
     except EnvironmentError:
         log.error("Could not open src/config/settings.json")
-        log.error("Please fill in src/config/sample_settings.json to your needs and copy to src/config/settings.json or to your config volume!")
+        log.error("Please fill in sample_settings.json to your needs and copy to src/config/settings.json or to your config volume!")
         sys.exit("Could not open settings.json")
 
     # Create plugin collection with all plugins found in the plugins folder

@@ -12,7 +12,7 @@ Plugins for the following devices are inclueded (as I need them in my personal s
 * [go-eCharger](https://go-e.co/produkte/go-echarger-home/)
 
 ## How to run it
-Well, first create a config file `settings.json` in `src/config`. You can use the `sample_settings.json` that's already located there.
+Well, first create a config file `settings.json` in `src/config`. (Hint: You can use the `sample_settings.json`.)
 
 Then, you need `Python 3` and `pip` installed, to do:
 
@@ -20,9 +20,9 @@ Then, you need `Python 3` and `pip` installed, to do:
     cd src/
     python3 main.py
 
-... or just use the `docker-compose.yml` that does everything for you:
+... or just use the `docker-compose-dev.yml` that does everything for you:
 
-    docker-compose up
+    docker-compose -f docker-compose-dev.yml up
 
 ## How does it look like
 
