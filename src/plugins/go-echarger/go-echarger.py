@@ -16,6 +16,8 @@ class GoEcharger(plugin_collection.Plugin):
         self.title = "go-eCharger"
         self.description = "Read and write data of go-eCharger wallbox."
         self.pluginPackage = type(self).__module__.split('.')[1]
+        self.type = "consumer"
+        self.has_runtime = False
         self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/go-echarger",
             "device_ip": "IP_OF_YOUR_ECHARGER" 
@@ -30,6 +32,9 @@ class GoEcharger(plugin_collection.Plugin):
             self.settings = settings[type(self).__name__]
             log.debug(f"Settings: {self.settings}")
             self.wallbox = goEapi(self.settings['device_ip'])
+
+    def has_runtime(self):
+        return self.has_runtime
 
     def endpoint(self, req, resp):
         # Path: plugin_path + /

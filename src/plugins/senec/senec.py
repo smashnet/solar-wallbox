@@ -16,8 +16,9 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         super().__init__()
         self.title = "SENEC.Home V3 hybrid (duo)"
         self.description = "Read and decode energy data from SENEC Home V3 Hybrid appliances."
-        self.type = "source"
         self.pluginPackage = type(self).__module__.split('.')[1]
+        self.type = "source"
+        self.has_runtime = False
         self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/senec",
             "device_ip": "IP_OF_YOUR_SENEC_DEVICE",
