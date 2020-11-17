@@ -1,8 +1,9 @@
 import responder
 import datetime
 import logging
+import threading
 
-logger = logging.getLogger("WebServer")
+log = logging.getLogger("WebServer")
 
 class WebServer:
     def __init__(self, settings, plugins):
@@ -17,12 +18,20 @@ class WebServer:
         self.port = settings["web"]["port"]
         self.plugins = plugins
         self.__register_routes()
+        self.__start_plugin_runtimes()
 
     def __register_routes(self):
         self.api.add_route("/", endpoint=self.__list_plugins)
         for plugin in self.plugins.get_plugins():
             plugin.add_webserver(self)
             self.api.add_route(plugin.settings['plugin_path'], endpoint=plugin.endpoint)
+
+    def __start_plugin_runtimes(self):
+        log.info("Starting plugin runtimes...")
+        for plugin in self.plugins.get_plugins():
+            if plugin.has_runtime:
+                plugin_runtime_thread = threading.Thread(target=plugin.runtime, args=(self.plugins.get_plugins(),), daemon=True)
+                plugin_runtime_thread.start()
 
     def render_template(self, path, template_vars=None):
         template_vars = template_vars if template_vars else {}

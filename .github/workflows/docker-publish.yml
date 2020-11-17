@@ -68,3 +68,13 @@ jobs:
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+#   deploy:
+#     needs: push
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: distributhor/workflow-webhook@v1.0.5
+#       - name: Workflow Webhook Action
+#         env:
+#           webhook_url: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+#           webhook_secret: ${{ secrets.DEPLOY_WEBHOOK_SECRET }}

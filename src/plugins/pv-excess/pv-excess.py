@@ -3,6 +3,7 @@ Plugin that reads from a source plugin and calculates if there is excessive powe
 to route to a consumer plugin
 """
 import os
+import time
 import logging
 import plugin_collection
 
@@ -16,12 +17,14 @@ class PVExcess(plugin_collection.Plugin):
     def __init__(self):
         super().__init__()
         self.title = "PV Excess Power"
-        self.description = "Read and decode energy data from SENEC Home V3 Hybrid appliances."
-        self.type = "switcher"
+        self.description = "Permanently monitors SENEC plugin and switches wallbox accordingly."
         self.pluginPackage = type(self).__module__.split('.')[1]
+        self.type = "switch"
+        self.has_runtime = True
         self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/excess"
         }
+        self.excess = 0.0
 
     def add_webserver(self, webserver):
         self.webserver = webserver
@@ -31,6 +34,22 @@ class PVExcess(plugin_collection.Plugin):
             log.info("Found custom config. Applying...")
             self.settings = settings[type(self).__name__]
             log.debug(f"Settings: {self.settings}")
+
+    def runtime(self, other_plugins):
+        (source_plugin, consumer_plugin) = self.__find_source_and_consumer_plugins(other_plugins)
+        # PVExcess needs exactly one source-plugin (self.type = "source"), and one consumer-plugin (self.type = "consumer")
+        if not source_plugin:
+            log.error("No power source plugin found!")
+            return
+        if not consumer_plugin:
+            log.error("No consumer plugin found!")
+            return
+        # This is run permanently in the background
+        while True:
+            data = source_plugin.getData()
+            self.excess = {"excessPower": data['PVProduction'] - data['housePower'] - data['batteryChargeRate']}
+
+            time.sleep(2)
 
     def endpoint(self, req, resp):
         template_vars = {
@@ -52,18 +71,17 @@ class PVExcess(plugin_collection.Plugin):
             "excessPower": 0.0   # Excess power (in W)
         }
         """
-        try:
-            data = self.source.getData()
-        except:
-            data = {
-                "PVProduction": 3000.0,
-                "housePower": 1432.3,
-                "batteryChargeRate": 844.2
-            }
-        return {
-            "excessPower": data['PVProduction'] - data['housePower'] - data['batteryChargeRate']
-        }
+        return self.excess
 
+    def __find_source_and_consumer_plugins(self, other_plugins):
+        source_plugin = False
+        consumer_plugin = False
+        for plugin in other_plugins:
+            if plugin.type == "source":
+                source_plugin = plugin
+            if plugin.type == "consumer":
+                consumer_plugin = plugin
+        return (source_plugin, consumer_plugin)
 
     def __send_response(self, res_web, resp, template_vars):
         template_vars['res'] = res_web
