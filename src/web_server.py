@@ -60,5 +60,4 @@ class WebServer:
                     "href": href
                 }
             )
-        print(res)
         return res

@@ -67,7 +67,7 @@ function updateHelperHTML(json) {
     let allowChargingToggle = document.querySelector('#allowChargingToggle');
     let maxAmpereInput = document.querySelector('#maxAmpereInput');
     
-    allowChargingToggle.checked = json['charging']['allow_charging'];
+    allowChargingToggle.checked = json['access_control']['allow_charging'];
     maxAmpereInput.value = json['charging']['max_ampere'];
 
     // Current Charging Process

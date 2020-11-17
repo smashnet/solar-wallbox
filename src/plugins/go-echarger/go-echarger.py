@@ -53,9 +53,6 @@ class GoEcharger(plugin_collection.Plugin):
         except KeyError:
             return
 
-    def __send_change(self, change):
-        return requests.get(f"http://{self.settings['device_ip']}{self.settings['device_api_write_path']}{change}").json()
-
     def __get_output_format(self, req):
         try:
             output_format = req.params['format']
@@ -70,6 +67,26 @@ class goEapi():
         self.read_api  = f"http://{device_ip}/status"
         self.write_api = f"http://{device_ip}/mqtt?payload="
         self.data = {}
+        self.value_map = {
+            "allow_charging": "alw",
+            "max_ampere"    : "amp",
+            "access_control": "ast",
+            "button_level_1": "al1",
+            "button_level_2": "al2",
+            "button_level_3": "al3",
+            "button_level_4": "al4",
+            "button_level_5": "al5",
+            "rfid_name_1"   : "rna",
+            "rfid_name_2"   : "rnm",
+            "rfid_name_3"   : "rne",
+            "rfid_name_4"   : "rn4",
+            "rfid_name_4"   : "rn5",
+            "rfid_name_4"   : "rn6",
+            "rfid_name_4"   : "rn7",
+            "rfid_name_4"   : "rn8",
+            "rfid_name_4"   : "rn9",
+            "rfid_name_4"   : "rn1"
+        }
 
     def __send_change(self, key, val):
         try:
@@ -83,13 +100,12 @@ class goEapi():
 
     def change_value(self, param):
         key, val = param.split('=')
-        if(key == "allow_charging"):
-            return self.__send_change("alw", val)
-        if(key == "max_ampere"):
-            if(int(val) not in range(6,32+1)):
-                return {"error": "max_ampere must be in range 6-32"}
-            else:
-                return self.__send_change("amp", val)
+        try:
+            key_name = self.value_map[key]
+        except KeyError:
+            log.warning(f"Key {key} not yet supported. Not changing anything!")
+            return
+        return self.__send_change(key_name, val)
 
     def get_status(self):
         try:
@@ -104,18 +120,46 @@ class goEapi():
     def updateData(self, status):
         # This is not the full set of available data available from the wallbox
         # For a complete documentation see https://github.com/goecharger/go-eCharger-API-v1
+        access_control = {
+            "0" : "open",
+            "1" : "RFID",
+            "2" : "price / automatic"
+        }
         charging_status_cases = {
             "1": "Charging station ready, no vehicle",
             "2": "Vehicle charging",
             "3": "Waiting for vehicle",
             "4": "Charge finished, vehicle still connected"
         }
+        error_states = {
+            "0": "No error",
+            "1": "Residual Current Device",
+            "3": "Phase disturbance",
+            "8": "Earthing detection",
+            "10": "Other"
+        }
         self.data = {
             "device_serial" : status['sse'],
             "fw_version"    : status['fwv'],
             "device_ip"     : self.device_ip,
-            "charging"      : {
+            "access_control": {
+                "access_control"   : access_control.get(status['ast'], "Invalid access control state"),
                 "allow_charging" : int(status['alw']), # 0/1
+                "unlocked_by"    : int(status['uby']),
+                "rfid_cards"     : {
+                    "card_1" : {
+                        "id"     : status['rca'],
+                        "name"   : status['rna'],
+                        "energy" : int(status['eca']) # in 0.1 kWh
+                    },
+                    "card_2" : {
+                        "id"     : status['rcr'],
+                        "name"   : status['rnm'],
+                        "energy" : int(status['ecr']) # in 0.1 kWh
+                    }
+                }
+            },
+            "charging"      : {
                 "status"        : charging_status_cases.get(status['car'], "Invalid charge status"),
                 "max_ampere"    : int(status['amp']), # 6-32
                 "current_power" : round(int(status['nrg'][11]) / 100.0, 3),
@@ -148,7 +192,8 @@ class goEapi():
                 "L2_powfac" : status['nrg'][13],
                 "L3_powfac" : status['nrg'][14],
                 "N_powfac"  : status['nrg'][15]
-            }
+            },
+            "error_state"   : error_states.get(status['err'], "Invalid error state")
         }
 
     ''' Phases
