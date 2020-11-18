@@ -131,118 +131,128 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
 
     def __get_web_dict(self):
         return {
-            "cards": [
-                [
-                    {
-                    "id": "housePower",
-                    "icons": [
+            "groups": [
+                {
+                    "title": "Consumption and Production",
+                    "cards": [
                         {
-                            "name": "house",
-                            "size": 48,
-                            "fill": "currentColor"
-                        }
-                    ],
-                    "title": "Hausverbrauch"
-                    },
-                    {
-                    "id": "inverterPower",
-                    "icons": [
-                        {
-                            "name": "sun",
-                            "size": 48,
-                            "fill": "currentColor"
-                        }
-                    ],
-                    "title": "PV-Erzeugung"
-                    }
-                ],[
-                    {
-                    "id": "batteryCharge",
-                    "icons": [
-                        {
-                            "name": "arrow-right",
-                            "size": 28,
-                            "fill": "currentColor"
+                        "id": "housePower",
+                        "icons": [
+                            {
+                                "name": "house",
+                                "size": 48,
+                                "fill": "currentColor"
+                            }
+                        ],
+                        "title": "Consumption"
                         },
                         {
-                            "name": "battery-charging",
-                            "size": 48,
-                            "fill": "currentColor"
+                        "id": "inverterPower",
+                        "icons": [
+                            {
+                                "name": "sun",
+                                "size": 48,
+                                "fill": "currentColor"
+                            }
+                        ],
+                        "title": "Production"
                         }
-                    ],
-                    "title": "Akku-Beladung"
-                    },
-                    {
-                    "id": "batteryDischarge",
-                    "icons": [
+                    ]
+                },
+                {
+                    "title": "Grid",
+                    "cards": [
                         {
-                            "name": "battery-half",
-                            "size": 48,
-                            "fill": "currentColor"
+                        "id": "gridPull",
+                        "icons": [
+                            {
+                                "name": "lightning",
+                                "size": 48,
+                                "fill": "currentColor"
+                            },
+                            {
+                                "name": "arrow-right",
+                                "size": 28,
+                                "fill": "currentColor"
+                            }
+                        ],
+                        "title": "Demand"
                         },
                         {
-                            "name": "arrow-right",
-                            "size": 28,
-                            "fill": "currentColor"
+                        "id": "gridPush",
+                        "icons": [
+                            {
+                                "name": "arrow-right",
+                                "size": 28,
+                                "fill": "currentColor"
+                            },
+                            {
+                                "name": "lightning",
+                                "size": 48,
+                                "fill": "currentColor"
+                            }
+                        ],
+                        "title": "Supply"
                         }
-                    ],
-                    "title": "Akku-Entnahme"
-                    }
-                ],[
-                    {
-                    "id": "gridPull",
-                    "icons": [
+                    ]
+                },
+                {
+                    "title": "Battery",
+                    "cards": [
                         {
-                            "name": "lightning",
-                            "size": 48,
-                            "fill": "currentColor"
+                        "id": "batteryCharge",
+                        "icons": [
+                            {
+                                "name": "arrow-right",
+                                "size": 28,
+                                "fill": "currentColor"
+                            },
+                            {
+                                "name": "battery-charging",
+                                "size": 48,
+                                "fill": "currentColor"
+                            }
+                        ],
+                        "title": "Charging"
                         },
                         {
-                            "name": "arrow-right",
-                            "size": 28,
-                            "fill": "currentColor"
-                        }
-                    ],
-                    "title": "Netzbezug"
-                    },
-                    {
-                    "id": "gridPush",
-                    "icons": [
-                        {
-                            "name": "arrow-right",
-                            "size": 28,
-                            "fill": "currentColor"
+                        "id": "batteryDischarge",
+                        "icons": [
+                            {
+                                "name": "battery-half",
+                                "size": 48,
+                                "fill": "currentColor"
+                            },
+                            {
+                                "name": "arrow-right",
+                                "size": 28,
+                                "fill": "currentColor"
+                            }
+                        ],
+                        "title": "Discharging"
                         },
                         {
-                            "name": "lightning",
-                            "size": 48,
-                            "fill": "currentColor"
+                        "id": "batteryRemainingTime",
+                        "icons": [
+                            {
+                                "name": "clock-history",
+                                "size": 48,
+                                "fill": "currentColor"
+                            },
+                            {
+                                "name": "arrow-right",
+                                "size": 28,
+                                "fill": "currentColor"
+                            },
+                            {
+                                "name": "battery",
+                                "size": 40,
+                                "fill": "currentColor"
+                            }
+                        ],
+                        "title": "Remaining Time"
                         }
-                    ],
-                    "title": "Netzeinspeisung"
-                    }
-                ],[
-                    {
-                    "id": "batteryRemainingTime",
-                    "icons": [
-                        {
-                            "name": "clock-history",
-                            "size": 48,
-                            "fill": "currentColor"
-                        },
-                        {
-                            "name": "arrow-right",
-                            "size": 28,
-                            "fill": "currentColor"
-                        },
-                        {
-                            "name": "battery",
-                            "size": 40,
-                            "fill": "currentColor"
-                        }
-                    ],
-                    "title": "Akku-Restlaufzeit"
-                    }
-                ]
+                    ]
+                }
             ]
         }

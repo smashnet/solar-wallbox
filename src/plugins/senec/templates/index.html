@@ -10,13 +10,16 @@
 {% endblock %}
 {% block content %}
         <main class="flex-fill">
-            {% for group in vars.res.cards %}
-            <div class="flex-container">
-            {% for card in group %}
+            {% for group in vars.res.groups %}
+            <div class="card mb-2">
+                <h6 class="card-subtitle m-2 text-muted d-inline-flex">{{ group.title }}</h6>
+                <div class="flex-container flex-row">
+            {% for card in group.cards %}
                 {% with card=card %}
                     {% include vars.pluginPackage + '/card.html' %}
                 {% endwith %}
             {% endfor %}
+            </div>
             </div>
             {% endfor %}
         </main>
