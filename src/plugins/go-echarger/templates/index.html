@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block head %}
-    <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" />
+    <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/bootstrap.min.css" integrity="sha384-CuOF+2SnTUfTwSZjCXf01h7uYhfOBuxIhGKPbfEJ3+FqH/s6cIFN9bGr1HmAg4fQ" />
     <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/go-echarger.css" />
     <title>go-eCharger</title>
 {% endblock %}
@@ -10,10 +10,10 @@
 {% endblock %}
 {% block content %}
         <main class="flex-fill">
-            <div class="flex-container">
 
+            <div class="flex-container">
                 <div class="flex-item">
-                    <div class="card" style="width: 22rem;">
+                    <div class="card bg-light" style="width: 22rem;">
                         <div class="card-body">
                             <h6 class="card-title">Controls</h6>
                             <table class="table">
@@ -29,8 +29,13 @@
                                     <td>Max Ampere</td>
                                     <td>
                                         <div class="input-group input-group-sm">
-                                            <input type="text" class="form-control form-control-sm" placeholder="6-16" style="width: 5rem;" id="maxAmpereInput">
-                                            <button class="btn btn-primary" type="button" id="saveMaxAmpereButton">Save</button>
+                                            <select class="form-select form-select-sm" id="maxAmpereSelect">
+                                                <option value="6">6 A</option>
+                                                <option value="8">8 A</option>
+                                                <option value="10">10 A</option>
+                                                <option value="12">12 A</option>
+                                                <option value="16">16 A</option>
+                                            </select>
                                         </div>
                                     </td>
                                 </tr>
@@ -40,7 +45,7 @@
                 </div>
 
                 <div class="flex-item">
-                    <div class="card" style="width: 22rem;">
+                    <div class="card bg-light" style="width: 22rem;">
                         <div class="card-body">
                             <h6 class="card-title">Current charging process</h6>
                             <table class="table">
@@ -66,7 +71,7 @@
                 </div>
 
                 <div class="flex-item">
-                    <div class="card" style="width: 22rem;">
+                    <div class="card bg-light" style="width: 22rem;">
                         <div class="card-body">
                             <h6 class="card-title">Device Information</h6>
                             <table class="table">
@@ -92,6 +97,5 @@
 {% endblock %}
 {% block js %}
     <script src="/static/{{ vars.pluginPackage }}/js/go-echarger.js"></script>
-    <script src="/static/{{ vars.pluginPackage }}/js/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"></script>
-    <script src="/static/{{ vars.pluginPackage }}/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"></script>
+    <script src="/static/{{ vars.pluginPackage }}/js/bootstrap.bundle.min.js" integrity="sha384-popRpmFF9JQgExhfw5tZT4I9/CI5e2QcuUZPOVXb1m7qUmeR2b50u+YFEYe1wgzy"></script>
 {% endblock %}

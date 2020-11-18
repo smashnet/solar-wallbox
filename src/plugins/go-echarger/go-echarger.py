@@ -101,7 +101,10 @@ class goEapi():
         except requests.ConnectionError:
             return {"error": "Connection error while accessing wallbox."}
         self.updateData(res)
-        return {"msg": "success!"}
+        return {
+            "msg": "success!",
+            key  : val
+            }
 
     def change_value(self, param):
         key, val = param.split('=')
