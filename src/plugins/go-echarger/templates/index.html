@@ -12,10 +12,11 @@
         <main class="flex-fill">
 
             <div class="flex-container">
+
                 <div class="flex-item">
                     <div class="card bg-light" style="width: 22rem;">
                         <div class="card-body">
-                            <h6 class="card-title">Controls</h6>
+                            <h6 class="card-title lead">Access Controls</h6>
                             <table class="table">
                                 <tr>
                                     <td>Allow Charging</td>
@@ -25,6 +26,36 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>Unlock Method</td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <select class="form-select form-select-sm" id="unlockMethodSelect">
+                                                <option value="0">open</option>
+                                                <option value="1">RFID</option>
+                                                <option value="2">automatic</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Current User</td>
+                                    <td class="small" id="unlockedByUser"></td>
+                                </tr>
+                                <tr>
+                                    <td>Total User Energy</td>
+                                    <td class="small" id="userEnergy"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-item">
+                    <div class="card bg-light" style="width: 22rem;">
+                        <div class="card-body">
+                            <h6 class="card-title lead">Power Settings</h6>
+                            <table class="table">
                                 <tr>
                                     <td>Max Ampere</td>
                                     <td>
@@ -47,7 +78,7 @@
                 <div class="flex-item">
                     <div class="card bg-light" style="width: 22rem;">
                         <div class="card-body">
-                            <h6 class="card-title">Current charging process</h6>
+                            <h6 class="card-title lead">Current Charging Process</h6>
                             <table class="table">
                                 <tr>
                                     <td>Charging Status</td>
@@ -73,7 +104,7 @@
                 <div class="flex-item">
                     <div class="card bg-light" style="width: 22rem;">
                         <div class="card-body">
-                            <h6 class="card-title">Device Information</h6>
+                            <h6 class="card-title lead">Device Information</h6>
                             <table class="table">
                                 <tr>
                                     <td>Serial Number</td>

@@ -26,6 +26,24 @@ function initActions() {
                 });
     });
 
+    let unlockMethodSelect = document.querySelector('#unlockMethodSelect');
+    unlockMethodSelect.addEventListener('change', function () {
+        let selected = unlockMethodSelect.options.selectedIndex;
+        let unlockMethod = unlockMethodSelect.options.item(selected);
+        fetch("/go-echarger?set=access_control=" + unlockMethod.value)
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        console.log(json['error']);
+                    }else if(json['msg'] == "success!") {
+                        let main = document.querySelector('main');
+                        main.insertBefore(createAlert("Successfully set access method to " + unlockMethod.innerHTML, "success"), main.firstChild);
+                    }
+                });
+    });
+
     let allowChargingToggle = document.querySelector('#allowChargingToggle');
     allowChargingToggle.addEventListener('change', function () {
         if(this.checked) {
@@ -66,12 +84,28 @@ function updateHTML() {
 }
 
 function updateHelperHTML(json) {
-    // Controls
+    // Access Controls
     let allowChargingToggle = document.querySelector('#allowChargingToggle');
+    let unlockMethodSelect = document.querySelector('#unlockMethodSelect');
+    let unlockedByUser = document.querySelector('#unlockedByUser');
+    let userEnergy = document.querySelector('#userEnergy');
+
+    allowChargingToggle.checked = json['access_control']['allow_charging'];
+    unlockMethodSelect.options.selectedIndex = getSelectedIndex(unlockMethodSelect, json['access_control']['access_method']);
+    let userID = json['access_control']['unlocked_by'];
+    if(userID > 0) {
+        unlockedByUser.innerHTML = json['access_control']['rfid_cards'][userID]['name'];
+        userEnergy.innerHTML = json['access_control']['rfid_cards'][userID]['energy']/10.0 + " kWh";
+    }else {
+        unlockedByUser.innerHTML = "None";
+        userEnergy.innerHTML = "- kWh";
+    }
+    
+
+    // Power Settings
     let maxAmpereSelect = document.querySelector('#maxAmpereSelect');
     
-    allowChargingToggle.checked = json['access_control']['allow_charging'];
-    maxAmpereSelect.options.selectedIndex = getMaxAmpereSelectedIndex(maxAmpereSelect, json['charging']['max_ampere']);
+    maxAmpereSelect.options.selectedIndex = getSelectedIndex(maxAmpereSelect, json['charging']['max_ampere']);
 
     // Current Charging Process
     let chargingStatus = document.querySelector('#chargingStatus');
@@ -94,9 +128,9 @@ function updateHelperHTML(json) {
     ipAddress.innerHTML = json['device_ip'];
 }
 
-function getMaxAmpereSelectedIndex(select, max_ampere) {
+function getSelectedIndex(select, value) {
     for(i = 0; i < select.options.length; i++) {
-        if(max_ampere == select.options.item(i).value) {
+        if(value == select.options.item(i).value) {
             return i;
         }
     }

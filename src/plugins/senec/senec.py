@@ -176,7 +176,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                     "id": "batteryDischarge",
                     "icons": [
                         {
-                            "name": "battery-charging",
+                            "name": "battery-half",
                             "size": 48,
                             "fill": "currentColor"
                         },

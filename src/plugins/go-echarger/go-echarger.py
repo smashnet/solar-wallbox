@@ -128,11 +128,6 @@ class goEapi():
     def updateData(self, status):
         # This is not the full set of available data available from the wallbox
         # For a complete documentation see https://github.com/goecharger/go-eCharger-API-v1
-        access_control = {
-            "0" : "open",
-            "1" : "RFID",
-            "2" : "price / automatic"
-        }
         charging_status_cases = {
             "1": "Charging station ready, no vehicle",
             "2": "Vehicle charging",
@@ -151,16 +146,16 @@ class goEapi():
             "fw_version"    : status['fwv'],
             "device_ip"     : self.device_ip,
             "access_control": {
-                "access_control"   : access_control.get(status['ast'], "Invalid access control state"),
+                "access_method"  : int(status['ast']),
                 "allow_charging" : int(status['alw']), # 0/1
                 "unlocked_by"    : int(status['uby']),
                 "rfid_cards"     : {
-                    "card_1" : {
+                    1 : {
                         "id"     : status['rca'],
                         "name"   : status['rna'],
                         "energy" : int(status['eca']) # in 0.1 kWh
                     },
-                    "card_2" : {
+                    2 : {
                         "id"     : status['rcr'],
                         "name"   : status['rnm'],
                         "energy" : int(status['ecr']) # in 0.1 kWh
