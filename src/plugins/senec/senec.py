@@ -16,7 +16,7 @@ __author__ = "Nicolas Inden"
 __copyright__ = "Copyright 2020, Nicolas Inden"
 __credits__ = ["Nicolas Inden", "Mikołaj Chwalisz"]
 __license__ = "Apache-2.0 License"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __maintainer__ = "Nicolas Inden"
 __email__ = "nico@smashnet.de"
 __status__ = "Production"
@@ -33,7 +33,7 @@ class Senec():
             res = self.__decode_data(response.json())
             return self.__substitute_system_state(res)
         else:
-            return {"msg": f"Status code {response.status_code}"}
+            return {"error": f"Status code {response.status_code}"}
 
     def get_all_values(self):
         request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
@@ -41,7 +41,7 @@ class Senec():
         if response.status_code == 200:
             return self.__decode_data(response.json())
         else:
-            return {"msg": f"Status code {response.status_code}"}
+            return {"error": f"Status code {response.status_code}"}
 
     def __decode_data(self, data):
         return { k: self.__decode_data_helper(v) for k, v in data.items() }
