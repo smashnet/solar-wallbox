@@ -136,26 +136,18 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                     "title": "Consumption and Production",
                     "cards": [
                         {
-                        "id": "housePower",
-                        "icons": [
-                            {
-                                "name": "house",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Consumption"
+                            "id": "housePower",
+                            "title": "Consumption",
+                            "icons": [
+                                {"name": "house", "size": 48, "fill": "currentColor"}
+                            ]
                         },
                         {
-                        "id": "inverterPower",
-                        "icons": [
-                            {
-                                "name": "sun",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Production"
+                            "id": "inverterPower",
+                            "title": "Production",
+                            "icons": [
+                                {"name": "sun", "size": 48, "fill": "currentColor"}
+                            ]
                         }
                     ]
                 },
@@ -163,23 +155,16 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                     "title": "Grid",
                     "cards": [
                         {
-                        "id": "gridPull",
-                        "icons": [
-                            {
-                                "name": "lightning",
-                                "size": 48,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Demand"
+                            "id": "gridPull",
+                            "title": "Demand",
+                            "icons": [
+                                {"name": "lightning", "size": 48, "fill": "currentColor"},
+                                {"name": "arrow-right", "size": 28, "fill": "currentColor"}
+                            ]
                         },
                         {
                         "id": "gridPush",
+                        "title": "Supply",
                         "icons": [
                             {
                                 "name": "arrow-right",
@@ -191,8 +176,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                                 "size": 48,
                                 "fill": "currentColor"
                             }
-                        ],
-                        "title": "Supply"
+                        ]
                         }
                     ]
                 },
