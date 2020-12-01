@@ -1,258 +1,210 @@
-"""
-Read and decode energy data from SENEC Home V3 Hybrid appliances.
-"""
-import os
-import logging
-import plugin_collection
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+"""
+Library to get a lot of useful data out of Senec appliances.
+
+Tested with: SENEC.Home V3 hybrid duo
+
+Kudos:
+* SYSTEM_STATE_NAME taken from https://github.com/mchwalisz/pysenec
+"""
 import requests
 import struct
 
-log = logging.getLogger("Senec")
+__author__ = "Nicolas Inden"
+__copyright__ = "Copyright 2020, Nicolas Inden"
+__credits__ = ["Nicolas Inden", "Mikołaj Chwalisz"]
+__license__ = "Apache-2.0 License"
+__version__ = "1.0.1"
+__maintainer__ = "Nicolas Inden"
+__email__ = "nico@smashnet.de"
+__status__ = "Production"
 
-class SenecHomeV3Hybrid(plugin_collection.Plugin):
-    
-    def __init__(self):
-        super().__init__()
-        self.title = "SENEC.Home V3 hybrid (duo)"
-        self.description = "Read and decode energy data from SENEC Home V3 Hybrid appliances."
-        self.pluginPackage = type(self).__module__.split('.')[1]
-        self.type = "source"
-        self.has_runtime = False
-        self.settings = { # Will be read from src/config/settings.json
-            "plugin_path": "/senec",
-            "device_ip": "IP_OF_YOUR_SENEC_DEVICE",
-            "device_api_path": "/lala.cgi",
-            "batteryCapacity": 10 # in kWh
-        }
+class Senec():
 
-    def add_webserver(self, webserver):
-        self.webserver = webserver
+    def __init__(self, device_ip):
+        self.device_ip = device_ip
+        self.read_api  = f"http://{device_ip}/lala.cgi"
 
-    def apply_settings(self, settings):
-        if(type(self).__name__ in settings):
-            log.info("Found custom config. Applying...")
-            self.settings = settings[type(self).__name__]
-            log.debug(f"Settings: {self.settings}")
+    def get_values(self):
+        response = requests.post(self.read_api, json=BASIC_REQUEST)
+        if response.status_code == 200:
+            res = self.__decode_data(response.json())
+            return self.__substitute_system_state(res)
+        else:
+            return {"error": f"Status code {response.status_code}"}
 
-    def endpoint(self, req, resp):
-        template_vars = {
-            "pluginPackage": self.pluginPackage
-        }
-        template_vars['name'] = type(self).__name__
-        if (self.__get_output_format(req) == "json"):
-            res = self.getData()
-            resp.media = res
-            return
-        res_web = self.__get_web_dict()
-        self.__send_response(res_web, resp, template_vars)
-
-    def getData(self):
-        """
-        getData can be used by other plugins. Values delivered are:
-        {
-            "housePower": 0.0,              # Power used (in W)
-            "PVProduction": 0.0,            # Power produced by PV (in W)
-            "batteryChargeRate": 0.0,       # The battery charging rate (in W)
-            "batteryDischargeRate": 0.0,    # The battery discharging rate (in W)
-            "batteryPercentage": 0.0,       # Remaining battery in percent
-            "batteryCapacity": 10,          # Battery capacity in kWh
-            "gridPull": 0.0,                # Power pulled from public grid (in W)
-            "gridPush": 0.0                 # Power pushed to public grid (in W)
-        }
-        """
-        from_appliance = self.__request_data_from_senec_appliance()
-        if from_appliance.status_code == 200:
-            decoded = self.__decode_data(from_appliance.json())
-            res = {
-                "housePower": decoded['ENERGY']['GUI_HOUSE_POW'],
-                "PVProduction": decoded['ENERGY']['GUI_INVERTER_POWER'],
-                "batteryChargeRate": 0.0,
-                "batteryDischargeRate": 0.0,
-                "batteryPercentage": decoded['ENERGY']['GUI_BAT_DATA_FUEL_CHARGE'],
-                "batteryCapacity": self.settings['batteryCapacity'],
-                "gridPull": 0.0,
-                "gridPush": 0.0
-                }
-            if decoded['ENERGY']['GUI_BAT_DATA_POWER'] > 0:
-                res['batteryChargeRate'] = decoded['ENERGY']['GUI_BAT_DATA_POWER']
-            else:
-                res['batteryDischargeRate'] = decoded['ENERGY']['GUI_BAT_DATA_POWER'] * -1
-            
-            if decoded['ENERGY']['GUI_GRID_POW'] > 0:
-                res['gridPull'] = decoded['ENERGY']['GUI_GRID_POW']
-            else:
-                res['gridPush'] = decoded['ENERGY']['GUI_GRID_POW'] * -1
-            return res
-
-
-    def __send_response(self, res_web, resp, template_vars):
-        template_vars['res'] = res_web
-        resp.html = self.webserver.render_template("senec/index.html", template_vars)
-
-    def __get_output_format(self, req):
-        try:
-            output_format = req.params['format']
-        except KeyError:
-            output_format = "html"
-        return output_format
+    def get_all_values(self):
+        request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
+        response = requests.post(self.read_api, json=request_json)
+        if response.status_code == 200:
+            return self.__decode_data(response.json())
+        else:
+            return {"error": f"Status code {response.status_code}"}
 
     def __decode_data(self, data):
-        for item in data['ENERGY']:
-            data['ENERGY'][item] = self.__decode_value(data['ENERGY'][item])
-        return data
+        return { k: self.__decode_data_helper(v) for k, v in data.items() }
+
+    def __decode_data_helper(self, data):
+        if isinstance(data, str):
+            return self.__decode_value(data)
+        if isinstance(data, list):
+            return [self.__decode_value(val) for val in data]
+        if isinstance(data, dict):
+            return { k: self.__decode_data_helper(v) for k, v in data.items() }
 
     def __decode_value(self, value):
         if value.startswith("fl_"):
             return struct.unpack('!f', bytes.fromhex(value[3:]))[0]
         if value.startswith("u8_"):
             return struct.unpack('!B', bytes.fromhex(value[3:]))[0]
+        if value.startswith("i3_") or value.startswith("u3_") or value.startswith("u1_"):
+            return int(value[3:], 16)
+        if value.startswith("st_"):
+            return value[3:]
         return value
 
-    '''
-    {
-    "ENERGY":
-        {"STAT_STATE":"","STAT_STATE_DECODE":"","GUI_BAT_DATA_POWER":"","GUI_INVERTER_POWER":"",
-        "GUI_HOUSE_POW":"","GUI_GRID_POW":"","STAT_MAINT_REQUIRED":"","GUI_BAT_DATA_FUEL_CHARGE":"",
-        "GUI_CHARGING_INFO":"","GUI_BOOSTING_INFO":""},
-    "WIZARD":
-        {"CONFIG_LOADED":"","SETUP_NUMBER_WALLBOXES":"","SETUP_WALLBOX_SERIAL0":"",
-        "SETUP_WALLBOX_SERIAL1":"","SETUP_WALLBOX_SERIAL2":"","SETUP_WALLBOX_SERIAL3":""},
-    "SYS_UPDATE":
-        {"UPDATE_AVAILABLE":""}
-    }
-    '''
-    def __request_data_from_senec_appliance(self):
-        return requests.post("http://" + self.settings['device_ip'] + self.settings['device_api_path'], json={
-            "ENERGY":
-                {"STAT_STATE":"","STAT_STATE_DECODE":"","GUI_BAT_DATA_POWER":"","GUI_INVERTER_POWER":"",
-                "GUI_HOUSE_POW":"","GUI_GRID_POW":"","STAT_MAINT_REQUIRED":"","GUI_BAT_DATA_FUEL_CHARGE":"",
-                "GUI_CHARGING_INFO":"","GUI_BOOSTING_INFO":""}})
+    def __substitute_system_state(self, data):
+        system_state = data['STATISTIC']['CURRENT_STATE']
+        data['STATISTIC']['CURRENT_STATE'] = SYSTEM_STATE_NAME[system_state]
+        return data
 
-    def __get_web_dict(self):
-        return {
-            "groups": [
-                {
-                    "title": "Consumption and Production",
-                    "cards": [
-                        {
-                        "id": "housePower",
-                        "icons": [
-                            {
-                                "name": "house",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Consumption"
-                        },
-                        {
-                        "id": "inverterPower",
-                        "icons": [
-                            {
-                                "name": "sun",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Production"
-                        }
-                    ]
-                },
-                {
-                    "title": "Grid",
-                    "cards": [
-                        {
-                        "id": "gridPull",
-                        "icons": [
-                            {
-                                "name": "lightning",
-                                "size": 48,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Demand"
-                        },
-                        {
-                        "id": "gridPush",
-                        "icons": [
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "lightning",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Supply"
-                        }
-                    ]
-                },
-                {
-                    "title": "Battery",
-                    "cards": [
-                        {
-                        "id": "batteryCharge",
-                        "icons": [
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "battery-charging",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Charging"
-                        },
-                        {
-                        "id": "batteryDischarge",
-                        "icons": [
-                            {
-                                "name": "battery-half",
-                                "size": 48,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Discharging"
-                        },
-                        {
-                        "id": "batteryRemainingTime",
-                        "icons": [
-                            {
-                                "name": "clock-history",
-                                "size": 48,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "battery",
-                                "size": 40,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Remaining Time"
-                        }
-                    ]
-                }
-            ]
-        }
+BASIC_REQUEST = {
+    'STATISTIC': {
+        'CURRENT_STATE': '',                # Current state of the system (int, see SYSTEM_STATE_NAME)
+        'LIVE_BAT_CHARGE_MASTER': '',       # Battery charge amount since installation (kWh)
+        'LIVE_BAT_DISCHARGE_MASTER': '',    # Battery discharge amount since installation (kWh)
+        'LIVE_GRID_EXPORT': '',             # Grid export amount since installation (kWh)
+        'LIVE_GRID_IMPORT': '',             # Grid import amount since installation (kWh)
+        'LIVE_HOUSE_CONS': '',              # House consumption since installation (kWh)
+        'LIVE_PV_GEN': '',                  # PV generated power since installation (kWh)
+        'MEASURE_TIME': ''                  # Unix timestamp for above values (ms)
+    },
+    'ENERGY': {
+        'GUI_BAT_DATA_CURRENT': '',         # Battery charge current: negative if discharging, positiv if charging (A)
+        'GUI_BAT_DATA_FUEL_CHARGE': '',     # Remaining battery (percent)
+        'GUI_BAT_DATA_POWER': '',           # Battery charge power: negative if discharging, positiv if charging (W)
+        'GUI_BAT_DATA_VOLTAGE': '',         # Battery voltage (V)
+        'GUI_GRID_POW': '',                 # Grid power: negative if exporting, positiv if importing (W)
+        'GUI_HOUSE_POW': '',                # House power consumption (W)
+        'GUI_INVERTER_POWER': '',           # PV production (W)
+        'STAT_HOURS_OF_OPERATION': ''       # Appliance hours of operation
+    },
+    'BMS': {
+        'CHARGED_ENERGY': '',               # List: Charged energy per battery
+        'DISCHARGED_ENERGY': '',            # List: Discharged energy per battery
+        'CYCLES': ''                        # List: Cycles per battery
+    },
+    'PV1': {
+        'MPP_CUR': '',                      # List: MPP current (A)
+        'MPP_POWER': '',                    # List: MPP power (W)
+        'MPP_VOL': '',                      # List: MPP voltage (V)
+        'POWER_RATIO': '',                  # Grid export limit (percent)
+        'P_TOTAL': ''                       # ?
+    },
+    'FACTORY': {
+        'DESIGN_CAPACITY': '',              # Battery design capacity (Wh)
+        'MAX_CHARGE_POWER_DC': '',          # Battery max charging power (W)
+        'MAX_DISCHARGE_POWER_DC': ''        # Battery max discharging power (W)
+    }
+}
+
+SYSTEM_STATE_NAME = {
+    0: "INITIAL STATE",
+    1: "ERROR INVERTER COMMUNICATION",
+    2: "ERROR ELECTRICY METER",
+    3: "RIPPLE CONTROL RECEIVER",
+    4: "INITIAL CHARGE",
+    5: "MAINTENANCE CHARGE",
+    6: "MAINTENANCE READY",
+    7: "MAINTENANCE REQUIRED",
+    8: "MAN. SAFETY CHARGE",
+    9: "SAFETY CHARGE READY",
+    10: "FULL CHARGE",
+    11: "EQUALIZATION: CHARGE",
+    12: "DESULFATATION: CHARGE",
+    13: "BATTERY FULL",
+    14: "CHARGE",
+    15: "BATTERY EMPTY",
+    16: "DISCHARGE",
+    17: "PV + DISCHARGE",
+    18: "GRID + DISCHARGE",
+    19: "PASSIVE",
+    20: "OFF",
+    21: "OWN CONSUMPTION",
+    22: "RESTART",
+    23: "MAN. EQUALIZATION: CHARGE",
+    24: "MAN. DESULFATATION: CHARGE",
+    25: "SAFETY CHARGE",
+    26: "BATTERY PROTECTION MODE",
+    27: "EG ERROR",
+    28: "EG CHARGE",
+    29: "EG DISCHARGE",
+    30: "EG PASSIVE",
+    31: "EG PROHIBIT CHARGE",
+    32: "EG PROHIBIT DISCHARGE",
+    33: "EMERGANCY CHARGE",
+    34: "SOFTWARE UPDATE",
+    35: "NSP ERROR",
+    36: "NSP ERROR: GRID",
+    37: "NSP ERROR: HARDWRE",
+    38: "NO SERVER CONNECTION",
+    39: "BMS ERROR",
+    40: "MAINTENANCE: FILTER",
+    41: "SLEEPING MODE",
+    42: "WAITING EXCESS",
+    43: "CAPACITY TEST: CHARGE",
+    44: "CAPACITY TEST: DISCHARGE",
+    45: "MAN. DESULFATATION: WAIT",
+    46: "MAN. DESULFATATION: READY",
+    47: "MAN. DESULFATATION: ERROR",
+    48: "EQUALIZATION: WAIT",
+    49: "EMERGANCY CHARGE: ERROR",
+    50: "MAN. EQUALIZATION: WAIT",
+    51: "MAN. EQUALIZATION: ERROR",
+    52: "MAN: EQUALIZATION: READY",
+    53: "AUTO. DESULFATATION: WAIT",
+    54: "ABSORPTION PHASE",
+    55: "DC-SWITCH OFF",
+    56: "PEAK-SHAVING: WAIT",
+    57: "ERROR BATTERY INVERTER",
+    58: "NPU-ERROR",
+    59: "BMS OFFLINE",
+    60: "MAINTENANCE CHARGE ERROR",
+    61: "MAN. SAFETY CHARGE ERROR",
+    62: "SAFETY CHARGE ERROR",
+    63: "NO CONNECTION TO MASTER",
+    64: "LITHIUM SAFE MODE ACTIVE",
+    65: "LITHIUM SAFE MODE DONE",
+    66: "BATTERY VOLTAGE ERROR",
+    67: "BMS DC SWITCHED OFF",
+    68: "GRID INITIALIZATION",
+    69: "GRID STABILIZATION",
+    70: "REMOTE SHUTDOWN",
+    71: "OFFPEAK-CHARGE",
+    72: "ERROR HALFBRIDGE",
+    73: "BMS: ERROR OPERATING TEMPERATURE",
+    74: "FACOTRY SETTINGS NOT FOUND",
+    75: "BACKUP POWER MODE - ACTIVE",
+    76: "BACKUP POWER MODE - BATTERY EMPTY",
+    77: "BACKUP POWER MODE ERROR",
+    78: "INITIALISING",
+    79: "INSTALLATION MODE",
+    80: "GRID OFFLINE",
+    81: "BMS UPDATE NEEDED",
+    82: "BMS CONFIGURATION NEEDED",
+    83: "INSULATION TEST",
+    84: "SELFTEST",
+    85: "EXTERNAL CONTROL",
+    86: "ERROR: TEMPERATURESENSOR",
+    87: "GRID OPERATOR: CHARGE PROHIBITED",
+    88: "GRID OPERATOR: DISCHARGE PROHIBITED",
+    89: "SPARE CAPACITY",
+    90: "SELFTEST ERROR",
+    91: "EARTH FAULT"
+}
+
+if __name__ == "__main__":
+    api = Senec("10.0.0.209")
+    print(api.get_values())

@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block head %}
+    <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/Chart.min.css" />
     <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/bootstrap.min.css" integrity="sha384-CuOF+2SnTUfTwSZjCXf01h7uYhfOBuxIhGKPbfEJ3+FqH/s6cIFN9bGr1HmAg4fQ" />
     <link rel="stylesheet" href="/static/{{ vars.pluginPackage }}/css/senec.css" />
     <title>SENEC Dashboard</title>
@@ -11,20 +12,28 @@
 {% block content %}
         <main class="flex-fill">
             {% for group in vars.res.groups %}
-            <div class="card mb-2">
+            <div class="card borderless mb-2">
                 <h6 class="card-subtitle m-2 text-muted d-inline-flex">{{ group.title }}</h6>
+                {% if group.prelude is defined %}
+                <div class="small ml-2 text-align-left">{{ group.prelude }}</div>
+                {% endif %}
                 <div class="flex-container flex-row">
-            {% for card in group.cards %}
-                {% with card=card %}
-                    {% include vars.pluginPackage + '/card.html' %}
-                {% endwith %}
-            {% endfor %}
+                {% for block in group.blocks %}
+                    {% if block.type == "square" %}
+                        {% include vars.pluginPackage + '/square.html' %}
+                    {% elif block.type == "chartcard" %}
+                        {% include vars.pluginPackage + '/chartcard.html' %}
+                    {% elif block.type == "infocard" %}
+                        {% include vars.pluginPackage + '/infocard.html' %}
+                    {% endif %}
+                {% endfor %}
             </div>
             </div>
             {% endfor %}
         </main>
 {% endblock %}
 {% block js %}
-    <script src="/static/{{ vars.pluginPackage }}/js/senec.js"></script>
     <script src="/static/{{ vars.pluginPackage }}/js/bootstrap.bundle.min.js" integrity="sha384-popRpmFF9JQgExhfw5tZT4I9/CI5e2QcuUZPOVXb1m7qUmeR2b50u+YFEYe1wgzy"></script>
+    <script src="/static/{{ vars.pluginPackage }}/js/Chart.bundle.min.js"></script>
+    <script src="/static/{{ vars.pluginPackage }}/js/senec.js"></script>
 {% endblock %}
