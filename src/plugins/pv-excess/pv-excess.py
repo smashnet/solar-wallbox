@@ -47,7 +47,7 @@ class PVExcess(plugin_collection.Plugin):
         # This is run permanently in the background
         while True:
             data = source_plugin.getData()
-            self.excess = {"excessPower": data['PVProduction'] - data['housePower'] - data['batteryChargeRate']}
+            self.excess = {"excessPower": data['live_data']['pv_production'] - data['live_data']['house_power'] - data['live_data']['battery_charge_power']}
 
             time.sleep(2)
 
@@ -107,7 +107,7 @@ class PVExcess(plugin_collection.Plugin):
                             "fill": "currentColor"
                         }
                     ],
-                    "title": "PV-Überschuss"
+                    "title": "Excess Power"
                     }
                 ]
             ]

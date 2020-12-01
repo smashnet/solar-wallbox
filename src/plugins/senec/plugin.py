@@ -50,36 +50,6 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         """
         getData can be used by other plugins.
         Plugins of type "source" should always use this structure:
-        {
-            "general": {
-                "current_state"         : "charging",           # Current state of the system
-                "hours_of_operation"    : 123                   # Appliance hours of operation
-            },
-            "live_data": {
-                "house_power"           : 0.0,                  # House power consumption (W)
-                "pv_production"         : 0.0,                  # PV production (W)
-                "grid_power"            : 0.0,                  # Grid power: negative if exporting, positiv if importing (W)
-                "battery_charge_power"  : 0.0,                  # Battery charge power: negative if discharging, positiv if charging (W)
-                "battery_charge_current": 0.0,                  # Battery charge current: negative if discharging, positiv if charging (A)
-                "battery_voltage"       : 0.0,                  # Battery voltage (V)
-                "battery_percentage"    : 0.0                   # Remaining battery (percent)
-            },
-            "battery_information": {
-                "design_capacity"       : 10000,                # Battery design capacity (Wh)
-                "max_charge_power"      : 2500,                 # Battery max charging power (W)
-                "max_discharge_power"   : 3750,                 # Battery max discharging power (W)
-                "cycles"                : [bat1, bat2, ...]     # List: Cycles per battery
-            },
-            "statistics": {
-                "timestamp"                 : 1606397884,
-                "battery_charged_energy"    : 0.0,
-                "battery_discharged_energy" : 0.0,
-                "grid_export"               : 0.0,
-                "grid_import"               : 0.0,
-                "house_consumption"         : 0.0,
-                "pv_production"             : 0.0
-            }
-        }
         """
         appliance_values = self.api.get_values()
         if not "error" in appliance_values:
@@ -117,7 +87,6 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                 }
             }
 
-
     def __send_response(self, res_web, resp, template_vars):
         template_vars['res'] = res_web
         resp.html = self.webserver.render_template("senec/index.html", template_vars)
@@ -130,111 +99,144 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         return output_format
 
     def __get_web_dict(self):
+        '''
+        {
+            "title": "Test Chart",
+            "type": "chartcard",
+            "current_val_id": "testChartCard",
+            "chart_id": "testChart",
+            "icons": [
+                {"name": "house", "size": 48, "fill": "currentColor"}
+            ]
+        },
+        '''
         return {
             "groups": [
                 {
                     "title": "Consumption and Production",
-                    "cards": [
+                    "blocks": [
                         {
                             "id": "housePower",
                             "title": "Consumption",
+                            "type": "square",
                             "icons": [
                                 {"name": "house", "size": 48, "fill": "currentColor"}
                             ]
                         },
                         {
-                            "id": "inverterPower",
+                            "id": "pvProduction",
                             "title": "Production",
+                            "type": "square",
                             "icons": [
                                 {"name": "sun", "size": 48, "fill": "currentColor"}
                             ]
-                        }
-                    ]
-                },
-                {
-                    "title": "Grid",
-                    "cards": [
+                        },
                         {
-                            "id": "gridPull",
-                            "title": "Demand",
+                            "id": "gridPower",
+                            "title": "Grid Power",
+                            "type": "square",
                             "icons": [
-                                {"name": "lightning", "size": 48, "fill": "currentColor"},
-                                {"name": "arrow-right", "size": 28, "fill": "currentColor"}
+                                {"name": "lightning", "size": 48, "fill": "currentColor"}
                             ]
                         },
                         {
-                        "id": "gridPush",
-                        "title": "Supply",
-                        "icons": [
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "lightning",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ]
+                            "id": "batteryPower",
+                            "title": "Battery Power",
+                            "type": "square",
+                            "icons": [
+                                {"name": "battery-full", "size": 48, "fill": "currentColor"}
+                            ]
                         }
                     ]
                 },
                 {
                     "title": "Battery",
-                    "cards": [
+                    "blocks": [
                         {
-                        "id": "batteryCharge",
-                        "icons": [
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "battery-charging",
-                                "size": 48,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Charging"
+                            "id": "batteryVoltage",
+                            "title": "Voltage",
+                            "type": "square",
+                            "icons": []
                         },
                         {
-                        "id": "batteryDischarge",
-                        "icons": [
-                            {
-                                "name": "battery-half",
-                                "size": 48,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Discharging"
+                            "id": "batteryCurrent",
+                            "title": "Current",
+                            "type": "square",
+                            "icons": []
                         },
                         {
-                        "id": "batteryRemainingTime",
-                        "icons": [
-                            {
-                                "name": "clock-history",
-                                "size": 48,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "arrow-right",
-                                "size": 28,
-                                "fill": "currentColor"
-                            },
-                            {
-                                "name": "battery",
-                                "size": 40,
-                                "fill": "currentColor"
-                            }
-                        ],
-                        "title": "Remaining Time"
+                            "id": "batteryPercentage",
+                            "title": "Charge Level",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "batteryRemainingTime",
+                            "title": "Remaining Time",
+                            "type": "square",
+                            "icons": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Statistics",
+                    "prelude": "Accumulated values since system installation:",
+                    "blocks": [
+                        {
+                            "id": "houseConsumptionStats",
+                            "title": "Consumption",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "pvProductionStats",
+                            "title": "Production",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "batteryChargedStats",
+                            "title": "Bat. Charged",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "batteryDischaredStats",
+                            "title": "Bat. Discharged",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "gridExportStats",
+                            "title": "Grid Export",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "gridImportStats",
+                            "title": "Grid Import",
+                            "type": "square",
+                            "icons": []
+                        },
+                    ]
+                },
+                {
+                    "title": "General",
+                    "blocks": [
+                        {
+                            "type": "infocard",
+                            "title": "",
+                            "icons": [
+                                {"name": "file-post", "size": 48, "fill": "currentColor"}
+                            ],
+                            "contents": [
+                                {"name": "Current State", "id": "currentState"},
+                                {"name": "Hours of Operation", "id": "opHours"},
+                                {"name": "Battery Cycles", "id": "batCycles"},
+                                {"name": "Battery Design Capacity", "id": "batDesignCapacity"},
+                                {"name": "Battery Max Charge Power", "id": "batMaxChargePower"},
+                                {"name": "Battery Max Discharge Power", "id": "batMaxDischargePower"}
+                            ]
                         }
                     ]
                 }
