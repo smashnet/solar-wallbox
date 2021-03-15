@@ -47,7 +47,10 @@ class PVExcess(plugin_collection.Plugin):
         # This is run permanently in the background
         while True:
             data = source_plugin.getData()
-            self.excess = {"excessPower": data['live_data']['pv_production'] - data['live_data']['house_power'] - data['live_data']['battery_charge_power']}
+            try:
+                self.excess = {"excessPower": data['live_data']['pv_production'] - data['live_data']['house_power'] - data['live_data']['battery_charge_power']}
+            except KeyError:
+                pass
 
             time.sleep(2)
 

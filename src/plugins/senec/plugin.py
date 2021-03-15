@@ -2,6 +2,8 @@
 Read and decode energy data from SENEC Home V3 Hybrid appliances.
 """
 import os
+import schedule
+import time
 import logging
 
 import plugin_collection
@@ -17,7 +19,8 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         self.description = "Read and decode energy data from SENEC Home V3 Hybrid appliances."
         self.pluginPackage = type(self).__module__.split('.')[1]
         self.type = "source"
-        self.has_runtime = False
+        self.has_runtime = True
+        self.current_data = {}
         self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/senec",
             "device_ip": "IP_OF_YOUR_SENEC_DEVICE"
@@ -34,13 +37,19 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
             # Connect to SENEC appliance now that we have the IP address
             self.api = Senec(self.settings['device_ip'])
 
+    def runtime(self, other_plugins):
+        # This is run permanently in the background
+        while True:
+            self.current_data = self.__getDataFromAppliance()
+            time.sleep(2)
+
     def endpoint(self, req, resp):
         template_vars = {
             "pluginPackage": self.pluginPackage
         }
         template_vars['name'] = type(self).__name__
         if (self.__get_output_format(req) == "json"):
-            res = self.getData()
+            res = self.current_data
             resp.media = res
             return
         res_web = self.__get_web_dict()
@@ -49,8 +58,11 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
     def getData(self):
         """
         getData can be used by other plugins.
-        Plugins of type "source" should always use this structure:
+        Plugins of type "source" should always use the structure shown in __getDataFromAppliance()
         """
+        return self.current_data
+
+    def __getDataFromAppliance(self):
         appliance_values = self.api.get_values()
         if not "error" in appliance_values:
             # Transform senec data structure to our data structure
