@@ -8,7 +8,7 @@ import responder
 from web_server import WebServer
 from plugin_collection import PluginCollection
 
-logging.basicConfig(level=logging.NOTSET)
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("Main")
 
 if __name__ == "__main__":

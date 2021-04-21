@@ -8,6 +8,7 @@ import logging
 
 import plugin_collection
 from .senec import Senec
+from .senec_db import SenecDB
 
 log = logging.getLogger("Senec")
 
@@ -23,7 +24,9 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         self.current_data = {}
         self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/senec",
-            "device_ip": "IP_OF_YOUR_SENEC_DEVICE"
+            "device_ip": "IP_OF_YOUR_SENEC_DEVICE",
+            "batteryCapacity": 10,
+            "db_file": "path_to_db_file"
         }
 
     def add_webserver(self, webserver):
@@ -33,6 +36,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         if(type(self).__name__ in settings):
             log.info("Found custom config. Applying...")
             self.settings = settings[type(self).__name__]
+            self.settings['db_path'] = f"{settings['common']['db_base_path']}{self.settings['plugin_path']}"
             log.debug(f"Settings: {self.settings}")
             # Connect to SENEC appliance now that we have the IP address
             self.api = Senec(self.settings['device_ip'])
@@ -41,6 +45,9 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         # This is run permanently in the background
         while True:
             self.current_data = self.__getDataFromAppliance()
+            db = SenecDB(self.settings['db_path'], self.settings['db_file'])
+            db.insert_measurement(self.current_data)
+            db.close()
             time.sleep(2)
 
     def endpoint(self, req, resp):

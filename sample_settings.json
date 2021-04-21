@@ -2,7 +2,8 @@
     "common": {
         "pluginsPackage": "plugins",
         "templates": "./templates",
-        "static-assets": "./static-assets"
+        "static-assets": "./static-assets",
+        "db_base_path": "./data"
     },
     "web": {
         "address": "0.0.0.0",
@@ -11,8 +12,8 @@
     "SenecHomeV3Hybrid": {
         "plugin_path": "/senec",
         "device_ip": "IP_OF_YOUR_SENEC_DEVICE",
-        "device_api_path": "/lala.cgi",
-        "batteryCapacity": 10
+        "batteryCapacity": 10,
+        "db_file": "senec.sqlite"
     },
     "GoEcharger": {
         "plugin_path": "/go-echarger",

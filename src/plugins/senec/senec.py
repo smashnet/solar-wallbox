@@ -36,7 +36,7 @@ class Senec():
             return {"error": f"Status code {response.status_code}"}
 
     def get_all_values(self):
-        request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
+        request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
         response = requests.post(self.read_api, json=request_json)
         if response.status_code == 200:
             return self.__decode_data(response.json())

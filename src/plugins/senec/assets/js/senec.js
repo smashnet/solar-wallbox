@@ -4,6 +4,9 @@ housePower, pvProduction, gridPower, batteryPower, batteryVoltage, batteryCurren
 batteryRemainingTime, houseConsumptionStats, pvProductionStats, batteryChargedStats, batteryDischaredStats,
 gridExportStats, gridImportStats;
 
+let color_draining = "#ffe9e9";
+let color_charging = "#e9ffe9";
+
 window.addEventListener('DOMContentLoaded', function () {
     initVars();
     //drawTestChart();
