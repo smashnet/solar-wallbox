@@ -8,6 +8,8 @@ Persistency layer for data from senec.py
 import os
 import sqlite3
 import logging
+from datetime import datetime, timedelta, timezone, date
+import pytz
 
 __author__ = "Nicolas Inden"
 __copyright__ = "Copyright 2021, Nicolas Inden"
@@ -19,15 +21,16 @@ __email__ = "nico@smashnet.de"
 __status__ = "Alpha"
 
 log = logging.getLogger("SenecDB")
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 class SenecDB():
 
-    def __init__(self, db_path, db_filename):
-        self.db_path = db_path
-        self.db_filename = db_filename
-        self.db_full_path = f"{self.db_path}/{self.db_filename}"
+    def __init__(self, db_file):
+        self.db_path = os.path.dirname(db_file)
+        self.db_filename = os.path.basename(db_file)
+        self.db_full_path = db_file
         self.db_version = "0.0.1"
+        self.timezone = pytz.timezone("Europe/Berlin")
         
         # Ensure directories exist
         try:
@@ -98,3 +101,60 @@ class SenecDB():
                                                         json['live_data']['battery_voltage'], 
                                                         json['live_data']['battery_percentage']))
         self.connection.commit()
+
+    def insert_measurement_with_custom_ts(self, json, datetime_ts):
+        self.cursor.execute("INSERT INTO senec VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                                        (datetime_ts,
+                                                        json['general']['current_state'], 
+                                                        json['statistics']['battery_charged_energy'], 
+                                                        json['statistics']['battery_discharged_energy'], 
+                                                        json['statistics']['grid_export'], 
+                                                        json['statistics']['grid_import'], 
+                                                        json['statistics']['house_consumption'], 
+                                                        json['statistics']['pv_production'], 
+                                                        json['live_data']['house_power'], 
+                                                        json['live_data']['pv_production'], 
+                                                        json['live_data']['grid_power'], 
+                                                        json['live_data']['battery_charge_power'], 
+                                                        json['live_data']['battery_charge_current'], 
+                                                        json['live_data']['battery_voltage'], 
+                                                        json['live_data']['battery_percentage']))
+        self.connection.commit()
+
+    def get_max_val_between_tss(self, column, ts1, ts2):
+        log.debug(f"SELECT MAX({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'")
+        return self.cursor.execute(f"SELECT MAX({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'").fetchone()[0]
+
+    def get_min_val_between_tss(self, column, ts1, ts2):
+        log.debug(f"SELECT MIN({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'")
+        return self.cursor.execute(f"SELECT MIN({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'").fetchone()[0]
+
+    def get_avg_val_between_tss(self, column, ts1, ts2):
+        log.debug(f"SELECT AVERAGE({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'")
+        return self.cursor.execute(f"SELECT AVERAGE({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'").fetchone()[0]
+
+    def get_diff_val_between_tss(self, column, ts1, ts2):
+        log.debug(f"{column}, {ts1}, {ts2}")
+        val1 = self.cursor.execute(f"SELECT {column} FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}' ORDER BY ts ASC LIMIT 1").fetchone()[0]
+        val2 = self.cursor.execute(f"SELECT {column} FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}' ORDER BY ts DESC LIMIT 1").fetchone()[0]
+        return val2-val1
+
+    def get_todays(self, metric):
+        today_zero = datetime.now(tz=self.timezone).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(tz=timezone.utc)
+        today_now = datetime.utcnow()
+        return self.get_diff_val_between_tss(metric, today_zero, today_now)
+
+    def get_todays_max(self, metric):
+        today_zero = datetime.now(tz=self.timezone).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(tz=timezone.utc)
+        today_now = datetime.utcnow()
+        return self.get_max_val_between_tss(metric, today_zero, today_now)
+
+    def get_todays_min(self, metric):
+        today_zero = datetime.now(tz=self.timezone).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(tz=timezone.utc)
+        today_now = datetime.utcnow()
+        return self.get_min_val_between_tss(metric, today_zero, today_now)
+
+    def get_todays_avg(self, metric):
+        today_zero = datetime.now(tz=self.timezone).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(tz=timezone.utc)
+        today_now = datetime.utcnow()
+        return self.get_avg_val_between_tss(metric, today_zero, today_now)

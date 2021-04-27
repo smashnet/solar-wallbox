@@ -7,8 +7,8 @@ import time
 import logging
 
 import plugin_collection
-from .senec import Senec
-from .senec_db import SenecDB
+from senec import Senec
+from senec_db import SenecDB
 
 log = logging.getLogger("Senec")
 
@@ -45,7 +45,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         # This is run permanently in the background
         while True:
             self.current_data = self.__getDataFromAppliance()
-            db = SenecDB(self.settings['db_path'], self.settings['db_file'])
+            db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
             db.insert_measurement(self.current_data)
             db.close()
             time.sleep(2)

@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9
 LABEL Nicolas Inden <nicolas@inden.one>
 
 WORKDIR /app
