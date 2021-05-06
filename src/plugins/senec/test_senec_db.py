@@ -10,7 +10,7 @@ import logging
 import unittest
 from datetime import datetime
 
-from senec_db import SenecDB
+from .senec_db import SenecDB
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("SenecDB-Tests")
