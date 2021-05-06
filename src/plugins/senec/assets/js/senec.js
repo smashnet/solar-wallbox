@@ -124,9 +124,9 @@ function updateHelperHTML(json) {
 }
 
 function getRemainingBatteryDuration(json) {
-    if ( (-json['live_data']['battery_charge_power'] / 1000).toFixed(2) > 0.0 ) {
+    if ( (-json['live_data']['battery_charge_power']).toFixed(2) > 0.0 ) {
         /* remainingPercentage to 0,xxx times 10 kWh battery capacity */
-        return ((json['live_data']['battery_percentage'].toFixed(2) * json['battery_information']['design_capacity']) / (-json['live_data']['battery_charge_power'] / 1000).toFixed(2)).toFixed(2) + " h";
+        return ((json['live_data']['battery_percentage'].toFixed(2) / 100 * json['battery_information']['design_capacity']) / (-json['live_data']['battery_charge_power']).toFixed(2)).toFixed(2) + " h";
     } else {
         return "-";
     }
