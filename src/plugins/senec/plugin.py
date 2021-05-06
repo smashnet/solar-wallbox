@@ -7,8 +7,8 @@ import time
 import logging
 
 import plugin_collection
-from senec import Senec
-from senec_db import SenecDB
+from .senec import Senec
+from .senec_db import SenecDB
 
 log = logging.getLogger("Senec")
 
