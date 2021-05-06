@@ -21,7 +21,7 @@ __email__ = "nico@smashnet.de"
 __status__ = "Alpha"
 
 log = logging.getLogger("SenecDB")
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 class SenecDB():
 
