@@ -51,16 +51,12 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
             time.sleep(2)
 
     def endpoint(self, req, resp):
-        template_vars = {
-            "pluginPackage": self.pluginPackage
-        }
-        template_vars['name'] = type(self).__name__
+        viewmodel = self.__create_view_model(req)
         if (self.__get_output_format(req) == "json"):
             res = self.current_data
             resp.media = res
             return
-        res_web = self.__get_web_dict()
-        self.__send_response(res_web, resp, template_vars)
+        resp.html = self.webserver.render_template("senec/index.html", viewmodel)
 
     def getData(self):
         """
@@ -68,6 +64,14 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         Plugins of type "source" should always use the structure shown in __getDataFromAppliance()
         """
         return self.current_data
+
+    def __create_view_model(self, req):
+        # Path: plugin_path + /
+        return {
+            "pluginPackage": self.pluginPackage,
+            "name": type(self).__name__,
+            "structure": self.__get_web_dict()
+        }
 
     def __getDataFromAppliance(self):
         appliance_values = self.api.get_values()
@@ -105,10 +109,6 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                     "pv_production"             : appliance_values["STATISTIC"]["LIVE_PV_GEN"]                  # PV generated power since installation (kWh)
                 }
             }
-
-    def __send_response(self, res_web, resp, template_vars):
-        template_vars['res'] = res_web
-        resp.html = self.webserver.render_template("senec/index.html", template_vars)
 
     def __get_output_format(self, req):
         try:

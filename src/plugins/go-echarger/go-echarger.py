@@ -52,6 +52,7 @@ class GoEcharger(plugin_collection.Plugin):
         return {
             "pluginPackage": self.pluginPackage,
             "name": type(self).__name__,
+            "structure": self.__get_web_dict(),
             "selected_device": self.__get_selected_device(req),
             "devices": [self.__add_to_dict(device, "no", i) for i, device in enumerate(self.settings['devices'])]
         }
@@ -79,6 +80,128 @@ class GoEcharger(plugin_collection.Plugin):
         except KeyError:
             device = 0
         return device
+
+    def __get_web_dict(self):
+        '''
+        {
+            "title": "Test Chart",
+            "type": "chartcard",
+            "current_val_id": "testChartCard",
+            "chart_id": "testChart",
+            "icons": [
+                {"name": "house", "size": 48, "fill": "currentColor"}
+            ]
+        },
+        '''
+        return {
+            "groups": [
+                {
+                    "title": "Access Controls",
+                    "blocks": [
+                        {
+                            "id": "allowChargingToggle",
+                            "title": "Allow Charging",
+                            "type": "square_switch",
+                            "icons": [
+                                {"name": "power", "size": 40, "fill": "currentColor"}
+                            ]
+                        },
+                        {
+                            "id": "unlockMethodSelect",
+                            "title": "Unlock Method",
+                            "type": "square_dropdown",
+                            "options": [
+                                {"value": 0, "text": "open"},
+                                {"value": 1, "text": "RFID"},
+                                {"value": 2, "text": "automatic"}
+                            ],
+                            "icons": [
+                                {"name": "unlock", "size": 40, "fill": "currentColor"}
+                            ]
+                        },
+                        {
+                            "id": "unlockedByUser",
+                            "title": "Current User",
+                            "type": "square",
+                            "icons": [
+                                {"name": "person", "size": 40, "fill": "currentColor"}
+                            ]
+                        },
+                        {
+                            "id": "userEnergy",
+                            "title": "Consumed by User",
+                            "type": "square",
+                            "icons": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Charging",
+                    "blocks": [
+                        {
+                            "id": "chargingStatus",
+                            "title": "Status",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "maxAmpereSelect",
+                            "title": "Max Ampere",
+                            "type": "square_dropdown",
+                            "options": [
+                                {"value": 6, "text": "6 A"},
+                                {"value": 8, "text": "8 A"},
+                                {"value": 10, "text": "10 A"},
+                                {"value": 12, "text": "12 A"},
+                                {"value": 16, "text": "16 A"}
+                            ],
+                            "icons": []
+                        },
+                        {
+                            "id": "chargingPower",
+                            "title": "Power",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "usedPhases",
+                            "title": "Used Phases",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "energyCharged",
+                            "title": "Charged",
+                            "type": "square",
+                            "icons": []
+                        },
+                        {
+                            "id": "totalEnergyCharged",
+                            "title": "Charged Total",
+                            "type": "square",
+                            "icons": []
+                        }
+                    ]
+                },
+                {
+                    "title": "General",
+                    "blocks": [
+                        {
+                            "type": "infocard",
+                            "title": "",
+                            "icons": [
+                                {"name": "plug", "size": 48, "fill": "currentColor"}
+                            ],
+                            "contents": [
+                                {"name": "Serial Number", "id": "serialNumber"},
+                                {"name": "Firmware", "id": "firmwareVersion"},
+                                {"name": "IP Address", "id": "ipAddress"}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
 
 class goeDevice():
 

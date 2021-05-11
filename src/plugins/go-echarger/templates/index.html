@@ -10,120 +10,27 @@
 {% endblock %}
 {% block content %}
         <main class="flex-fill">
-
-            <div class="flex-container">
-
-                <div class="flex-item">
-                    <div class="card bg-light" style="width: 22rem;">
-                        <div class="card-body">
-                            <h6 class="card-title lead">Access Controls</h6>
-                            <table class="table">
-                                <tr>
-                                    <td>Allow Charging</td>
-                                    <td>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="allowChargingToggle">
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Unlock Method</td>
-                                    <td>
-                                        <div class="input-group input-group-sm">
-                                            <select class="form-select form-select-sm" id="unlockMethodSelect">
-                                                <option value="0">open</option>
-                                                <option value="1">RFID</option>
-                                                <option value="2">automatic</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Current User</td>
-                                    <td class="small" id="unlockedByUser"></td>
-                                </tr>
-                                <tr>
-                                    <td>Total User Energy</td>
-                                    <td class="small" id="userEnergy"></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+            {% for group in vars.structure.groups %}
+            <div class="card borderless mb-2">
+                <h6 class="card-subtitle m-2 text-muted d-inline-flex">{{ group.title }}</h6>
+                {% if group.prelude is defined %}
+                <div class="small ml-2 text-align-left">{{ group.prelude }}</div>
+                {% endif %}
+                <div class="flex-container flex-row">
+                {% for block in group.blocks %}
+                    {% if block.type == "square" %}
+                        {% include vars.pluginPackage + '/square.html' %}
+                    {% elif block.type == "square_switch" %}
+                        {% include vars.pluginPackage + '/square_switch.html' %}
+                    {% elif block.type == "square_dropdown" %}
+                        {% include vars.pluginPackage + '/square_dropdown.html' %}
+                    {% elif block.type == "infocard" %}
+                        {% include vars.pluginPackage + '/infocard.html' %}
+                    {% endif %}
+                {% endfor %}
                 </div>
-
-                <div class="flex-item">
-                    <div class="card bg-light" style="width: 22rem;">
-                        <div class="card-body">
-                            <h6 class="card-title lead">Power Settings</h6>
-                            <table class="table">
-                                <tr>
-                                    <td>Max Ampere</td>
-                                    <td>
-                                        <div class="input-group input-group-sm">
-                                            <select class="form-select form-select-sm" id="maxAmpereSelect">
-                                                <option value="6">6 A</option>
-                                                <option value="8">8 A</option>
-                                                <option value="10">10 A</option>
-                                                <option value="12">12 A</option>
-                                                <option value="16">16 A</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex-item">
-                    <div class="card bg-light" style="width: 22rem;">
-                        <div class="card-body">
-                            <h6 class="card-title lead">Current Charging Process</h6>
-                            <table class="table">
-                                <tr>
-                                    <td>Charging Status</td>
-                                    <td class="small" id="chargingStatus"></td>
-                                </tr>
-                                <tr>
-                                    <td>Charging Power</td>
-                                    <td class="small" id="chargingPower"></td>
-                                </tr>
-                                <tr>
-                                    <td>Used Phases</td>
-                                    <td class="small" id="usedPhases"></td>
-                                </tr>
-                                <tr>
-                                    <td>Energy Charged</td>
-                                    <td class="small" id="energyCharged"></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex-item">
-                    <div class="card bg-light" style="width: 22rem;">
-                        <div class="card-body">
-                            <h6 class="card-title lead">Device Information</h6>
-                            <table class="table">
-                                <tr>
-                                    <td>Serial Number</td>
-                                    <td class="small" id="serialNumber"></td>
-                                </tr>
-                                <tr>
-                                    <td>Firmware</td>
-                                    <td class="small" id="firmwareVersion"></td>
-                                </tr>
-                                <tr>
-                                    <td>IP Address</td>
-                                    <td class="small" id="ipAddress"></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
             </div>
+            {% endfor %}
         </main>
 {% endblock %}
 {% block js %}

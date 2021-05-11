@@ -1,0 +1,17 @@
+<div class="flex-item">
+    <div class="card bg-light" style="width: 10rem;">
+        <div class="card-body">
+            {% for icon in block.icons %}
+                {% include vars.pluginPackage + '/icon.html' %}
+            {% endfor %}
+        <h6 class="card-subtitle mb-2 mt-1 text-muted">{{ block.title }}</h6>
+        <div class="input-group input-group-sm">
+            <select class="form-select form-select-sm" id="{{ block.id }}">
+                {% for option in block.options %}
+                <option value="{{ option.value }}">{{ option.text }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        </div>
+    </div>
+</div>
