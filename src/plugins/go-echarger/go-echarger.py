@@ -18,10 +18,8 @@ class GoEcharger(plugin_collection.Plugin):
         self.pluginPackage = type(self).__module__.split('.')[1]
         self.type = "consumer"
         self.has_runtime = False
-        self.settings = { # Will be read from src/config/settings.json
-            "plugin_path": "/go-echarger",
-            "device_ip": "IP_OF_YOUR_ECHARGER" 
-        }
+        self.devices = [] # Will be read from src/config/settings.json
+        self.settings = {} # Will be read from src/config/settings.json
 
     def add_webserver(self, webserver):
         self.webserver = webserver
@@ -31,26 +29,36 @@ class GoEcharger(plugin_collection.Plugin):
             log.info("Found custom config. Applying...")
             self.settings = settings[type(self).__name__]
             log.debug(f"Settings: {self.settings}")
-            self.wallbox = goEapi(self.settings['device_ip'])
+            self.devices = [goeDevice(device['name'], device['ip']) for device in self.settings['devices']]
 
     def has_runtime(self):
         return self.has_runtime
 
     def endpoint(self, req, resp):
-        # Path: plugin_path + /
-        template_vars = {
-            "pluginPackage": self.pluginPackage
-        }
-        template_vars['name'] = type(self).__name__
+        viewmodel = self.__create_view_model(req)
+
         if (self.__get_output_format(req) == "json"):
-            resp.media = self.wallbox.get_status()
+            resp.media = self.devices[viewmodel['selected_device']].get_status()
             return
         change_value = self.__get_change_value(req)
         if (change_value):
-            res = self.wallbox.change_value(change_value)
+            res = self.devices[viewmodel['selected_device']].change_value(change_value)
             resp.media = res
             return
-        resp.html = self.webserver.render_template("go-echarger/index.html", template_vars)
+        resp.html = self.webserver.render_template("go-echarger/index.html", viewmodel)
+
+    def __create_view_model(self, req):
+        # Path: plugin_path + /
+        return {
+            "pluginPackage": self.pluginPackage,
+            "name": type(self).__name__,
+            "selected_device": self.__get_selected_device(req),
+            "devices": [self.__add_to_dict(device, "no", i) for i, device in enumerate(self.settings['devices'])]
+        }
+
+    def __add_to_dict(self, d, k, v):
+        d[k] = v
+        return d
 
     def __get_change_value(self, req):
         try:
@@ -65,12 +73,20 @@ class GoEcharger(plugin_collection.Plugin):
             output_format = "html"
         return output_format
 
-class goEapi():
+    def __get_selected_device(self, req):
+        try:
+            device = int(req.params['device'])
+        except KeyError:
+            device = 0
+        return device
 
-    def __init__(self, device_ip):
-        self.device_ip = device_ip
-        self.read_api  = f"http://{device_ip}/status"
-        self.write_api = f"http://{device_ip}/mqtt?payload="
+class goeDevice():
+
+    def __init__(self, name, ip):
+        self.name = name
+        self.ip = ip
+        self.read_api  = f"http://{self.ip}/status"
+        self.write_api = f"http://{self.ip}/mqtt?payload="
         self.data = {}
         self.value_map = {
             "allow_charging": "alw",
@@ -144,7 +160,7 @@ class goEapi():
         self.data = {
             "device_serial" : status['sse'],
             "fw_version"    : status['fwv'],
-            "device_ip"     : self.device_ip,
+            "device_ip"     : self.ip,
             "access_control": {
                 "access_method"  : int(status['ast']),
                 "allow_charging" : int(status['alw']), # 0/1

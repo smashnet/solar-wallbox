@@ -17,7 +17,16 @@
     },
     "GoEcharger": {
         "plugin_path": "/go-echarger",
-        "device_ip": "IP_OF_YOUR_ECHARGER"
+        "devices": [
+            {
+                "name": "First eCharger",
+                "ip": "IP_OF_YOUR_FIRST_ECHARGER"
+            },
+            {
+                "name": "Second eCharger",
+                "ip": "IP_OF_YOUR_SECOND_ECHARGER"
+            }
+        ]
     },
     "PVExcess": {
         "plugin_path": "/excess"

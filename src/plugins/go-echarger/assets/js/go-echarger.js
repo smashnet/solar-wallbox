@@ -4,15 +4,35 @@ window.addEventListener('DOMContentLoaded', function () {
     updateHTML();
     setInterval(() => {
         updateHTML();
-    }, 5000);
+    }, 2000);
 });
 
+let baseurl = "/go-echarger";
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+function getUrlParam(parameter, defaultvalue){
+    var urlparameter = defaultvalue;
+    if(window.location.href.indexOf(parameter) > -1){
+        urlparameter = getUrlVars()[parameter];
+        }
+    return urlparameter;
+}
+
 function initActions() {
+    // Enhance baseurl with used device
+    baseurl = baseurl + "?device=" + getUrlParam('device', '0')
     let maxAmpereSelect = document.querySelector('#maxAmpereSelect');
     maxAmpereSelect.addEventListener('change', function () {
         let selected = maxAmpereSelect.options.selectedIndex;
         let maxAmpereValue = maxAmpereSelect.options.item(selected).value;
-        fetch("/go-echarger?set=max_ampere=" + maxAmpereValue)
+        fetch(baseurl + "&set=max_ampere=" + maxAmpereValue)
                 .then(response => {
                     return response.json();
                 })
@@ -30,7 +50,7 @@ function initActions() {
     unlockMethodSelect.addEventListener('change', function () {
         let selected = unlockMethodSelect.options.selectedIndex;
         let unlockMethod = unlockMethodSelect.options.item(selected);
-        fetch("/go-echarger?set=access_control=" + unlockMethod.value)
+        fetch(baseurl + "&set=access_control=" + unlockMethod.value)
                 .then(response => {
                     return response.json();
                 })
@@ -47,7 +67,7 @@ function initActions() {
     let allowChargingToggle = document.querySelector('#allowChargingToggle');
     allowChargingToggle.addEventListener('change', function () {
         if(this.checked) {
-            fetch("/go-echarger?set=allow_charging=1")
+            fetch(baseurl + "&set=allow_charging=1")
                 .then(response => {
                     return response.json();
                 })
@@ -58,7 +78,7 @@ function initActions() {
                     }
                 });
         } else {
-            fetch("/go-echarger?set=allow_charging=0")
+            fetch(baseurl + "&set=allow_charging=0")
                 .then(response => {
                     return response.json();
                 })
@@ -74,7 +94,7 @@ function initActions() {
 
 function updateHTML() {
     /*  */
-    fetch("/go-echarger?format=json")
+    fetch(baseurl + "&format=json")
         .then(response => {
             return response.json();
         })

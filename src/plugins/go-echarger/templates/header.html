@@ -7,5 +7,15 @@
                 </svg></a>
             <span style="margin-left: 0.5rem;">go-eCharger</span>
         </span>
+        <span class="d-flex">
+            {% for device in vars.devices %}
+            <a class="btn {% if vars.selected_device == device.no %}btn-dark{% else %}btn-light{% endif %} mr-2" role="button" href="/{{ vars.pluginPackage }}?device={{ device.no }}">
+                <svg class="bi" width="20" height="20" fill="currentColor">
+                    <use xlink:href="/static/{{ vars.pluginPackage }}/icons/bootstrap-icons.svg#plug"/>
+                </svg>
+                {{ device.name }}
+            </a>
+            {% endfor %}
+        </span>
     </div>
 </nav>
