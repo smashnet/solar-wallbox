@@ -11,7 +11,7 @@
 {% endblock %}
 {% block content %}
         <main class="flex-fill">
-            {% for group in vars.res.groups %}
+            {% for group in vars.structure.groups %}
             <div class="card borderless mb-2">
                 <h6 class="card-subtitle m-2 text-muted d-inline-flex">{{ group.title }}</h6>
                 {% if group.prelude is defined %}
@@ -27,7 +27,7 @@
                         {% include vars.pluginPackage + '/infocard.html' %}
                     {% endif %}
                 {% endfor %}
-            </div>
+                </div>
             </div>
             {% endfor %}
         </main>
