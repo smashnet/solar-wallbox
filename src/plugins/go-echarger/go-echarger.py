@@ -117,7 +117,9 @@ class GoEcharger(plugin_collection.Plugin):
                                 {"value": 12, "text": "12 A"},
                                 {"value": 16, "text": "16 A"}
                             ],
-                            "icons": []
+                            "icons": [
+                                {"name": "lightning", "size": 40, "fill": "currentColor"}
+                            ]
                         }
                     ]
                 },
@@ -165,7 +167,7 @@ class GoEcharger(plugin_collection.Plugin):
                             "type": "square_dropdown",
                             "options": [
                                 {"value": 0, "text": "open"},
-                                {"value": 1, "text": "RFID"},
+                                {"value": 1, "text": "RFID/App"},
                                 {"value": 2, "text": "automatic"}
                             ],
                             "icons": [
