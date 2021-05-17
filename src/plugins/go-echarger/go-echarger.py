@@ -96,7 +96,7 @@ class GoEcharger(plugin_collection.Plugin):
         return {
             "groups": [
                 {
-                    "title": "Access Controls",
+                    "title": "Main Controls",
                     "blocks": [
                         {
                             "id": "allowChargingToggle",
@@ -105,44 +105,6 @@ class GoEcharger(plugin_collection.Plugin):
                             "icons": [
                                 {"name": "power", "size": 40, "fill": "currentColor"}
                             ]
-                        },
-                        {
-                            "id": "unlockMethodSelect",
-                            "title": "Unlock Method",
-                            "type": "square_dropdown",
-                            "options": [
-                                {"value": 0, "text": "open"},
-                                {"value": 1, "text": "RFID"},
-                                {"value": 2, "text": "automatic"}
-                            ],
-                            "icons": [
-                                {"name": "unlock", "size": 40, "fill": "currentColor"}
-                            ]
-                        },
-                        {
-                            "id": "unlockedByUser",
-                            "title": "Current User",
-                            "type": "square",
-                            "icons": [
-                                {"name": "person", "size": 40, "fill": "currentColor"}
-                            ]
-                        },
-                        {
-                            "id": "userEnergy",
-                            "title": "Consumed by User",
-                            "type": "square",
-                            "icons": []
-                        }
-                    ]
-                },
-                {
-                    "title": "Charging",
-                    "blocks": [
-                        {
-                            "id": "chargingStatus",
-                            "title": "Status",
-                            "type": "square",
-                            "icons": []
                         },
                         {
                             "id": "maxAmpereSelect",
@@ -155,6 +117,17 @@ class GoEcharger(plugin_collection.Plugin):
                                 {"value": 12, "text": "12 A"},
                                 {"value": 16, "text": "16 A"}
                             ],
+                            "icons": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Charging",
+                    "blocks": [
+                        {
+                            "id": "chargingStatus",
+                            "title": "Status",
+                            "type": "square",
                             "icons": []
                         },
                         {
@@ -180,6 +153,40 @@ class GoEcharger(plugin_collection.Plugin):
                             "title": "Charged Total",
                             "type": "square",
                             "icons": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Access Controls",
+                    "blocks": [
+                        {
+                            "id": "unlockMethodSelect",
+                            "title": "Unlock Method",
+                            "type": "square_dropdown",
+                            "options": [
+                                {"value": 0, "text": "open"},
+                                {"value": 1, "text": "RFID"},
+                                {"value": 2, "text": "automatic"}
+                            ],
+                            "icons": [
+                                {"name": "unlock", "size": 40, "fill": "currentColor"}
+                            ]
+                        },
+                        {
+                            "id": "unlockedByUser",
+                            "title": "Current User",
+                            "type": "square",
+                            "icons": [
+                                {"name": "person", "size": 40, "fill": "currentColor"}
+                            ]
+                        },
+                        {
+                            "id": "userEnergy",
+                            "title": "Charged by User",
+                            "type": "square",
+                            "icons": [
+                                {"name": "plug", "size": 40, "fill": "currentColor"}
+                            ]
                         }
                     ]
                 },

@@ -1,12 +1,12 @@
 <div class="flex-item">
-    <div class="card bg-light" style="width: 10rem;">
+    <div class="card square bg-light">
         <div class="card-body">
             {% for icon in block.icons %}
                 {% include vars.pluginPackage + '/icon.html' %}
             {% endfor %}
         <h6 class="card-subtitle mb-2 mt-1 text-muted">{{ block.title }}</h6>
         <div class="form-check form-switch">
-            <input class="form-check-input m-auto" type="checkbox" id="{{ block.id }}">
+            <input class="form-check-input ml-1" type="checkbox" id="{{ block.id }}">
         </div>
         </div>
     </div>
