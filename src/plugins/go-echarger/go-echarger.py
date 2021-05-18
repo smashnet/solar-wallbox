@@ -96,6 +96,19 @@ class GoEcharger(plugin_collection.Plugin):
         return {
             "groups": [
                 {
+                    "title": "Status",
+                    "blocks": [
+                        {
+                            "id": "chargingStatus",
+                            "text": "-",
+                            "type": "strip",
+                            "icons": [
+                                {"name": "info-square-fill", "size": 20, "fill": "currentColor"}
+                            ]
+                        },
+                    ]
+                },
+                {
                     "title": "Main Controls",
                     "blocks": [
                         {
@@ -126,12 +139,6 @@ class GoEcharger(plugin_collection.Plugin):
                 {
                     "title": "Charging",
                     "blocks": [
-                        {
-                            "id": "chargingStatus",
-                            "title": "Status",
-                            "type": "square",
-                            "icons": []
-                        },
                         {
                             "id": "chargingPower",
                             "title": "Power",

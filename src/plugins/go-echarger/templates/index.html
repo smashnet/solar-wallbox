@@ -26,6 +26,8 @@
                         {% include vars.pluginPackage + '/square_dropdown.html' %}
                     {% elif block.type == "infocard" %}
                         {% include vars.pluginPackage + '/infocard.html' %}
+                    {% elif block.type == "strip" %}
+                        {% include vars.pluginPackage + '/strip.html' %}
                     {% endif %}
                 {% endfor %}
                 </div>

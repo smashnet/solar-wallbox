@@ -1,0 +1,10 @@
+<div class="flex-item">
+    <div class="alert alert-dark d-flex align-items-center" role="alert">
+        {% for icon in block.icons %}
+            {% include vars.pluginPackage + '/icon.html' %}
+        {% endfor %}
+        <div class="ml-2" id="{{ block.id }}">
+          {{ block.text }}
+        </div>
+    </div>
+</div>
