@@ -96,7 +96,7 @@ class GoEcharger(plugin_collection.Plugin):
         return {
             "groups": [
                 {
-                    "title": "Status",
+                    "title": "",
                     "blocks": [
                         {
                             "id": "chargingStatus",
@@ -211,7 +211,8 @@ class GoEcharger(plugin_collection.Plugin):
                             "contents": [
                                 {"name": "Serial Number", "id": "serialNumber"},
                                 {"name": "Firmware", "id": "firmwareVersion"},
-                                {"name": "IP Address", "id": "ipAddress"}
+                                {"name": "IP Address", "id": "ipAddress"},
+                                {"name": "Error Status", "id": "errorStatus"}
                             ]
                         }
                     ]
@@ -284,10 +285,10 @@ class goeDevice():
         # This is not the full set of available data available from the wallbox
         # For a complete documentation see https://github.com/goecharger/go-eCharger-API-v1
         charging_status_cases = {
-            "1": "Charging station ready, no vehicle",
-            "2": "Vehicle charging",
-            "3": "Waiting for vehicle",
-            "4": "Charge finished, vehicle still connected"
+            "1": "Wallbox ready, no car connected",
+            "2": "Car is charging",
+            "3": "Waiting for car",
+            "4": "Charge finished"
         }
         error_states = {
             "0": "No error",
