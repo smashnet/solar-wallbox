@@ -44,10 +44,15 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
     def runtime(self, other_plugins):
         # This is run permanently in the background
         while True:
+            # Get current data from appliance
             self.current_data = self.__getDataFromAppliance()
+            
+            # Store current data to DB
             db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
             db.insert_measurement(self.current_data)
+            self.__insert_statistics_data(db)
             db.close()
+
             time.sleep(2)
 
     def endpoint(self, req, resp):
@@ -72,6 +77,27 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
             "name": type(self).__name__,
             "structure": self.__get_web_dict()
         }
+
+    def __insert_statistics_data(self, db):
+        self.current_data["live_data"]["house_power_min"] = db.get_todays_min("live_house_power")
+        self.current_data["live_data"]["house_power_avg"] = db.get_todays_avg("live_house_power")
+        self.current_data["live_data"]["house_power_max"] = db.get_todays_max("live_house_power")
+        self.current_data["live_data"]["pv_production_min"] = db.get_todays_min("live_pv_production")
+        self.current_data["live_data"]["pv_production_avg"] = db.get_todays_avg("live_pv_production")
+        self.current_data["live_data"]["pv_production_max"] = db.get_todays_max("live_pv_production")
+        self.current_data["live_data"]["grid_power_min"] = db.get_todays_min("live_grid_power")
+        self.current_data["live_data"]["grid_power_avg"] = db.get_todays_avg("live_grid_power")
+        self.current_data["live_data"]["grid_power_max"] = db.get_todays_max("live_grid_power")
+        self.current_data["live_data"]["battery_charge_power_min"] = db.get_todays_min("live_battery_charge_power")
+        self.current_data["live_data"]["battery_charge_power_avg"] = db.get_todays_avg("live_battery_charge_power")
+        self.current_data["live_data"]["battery_charge_power_max"] = db.get_todays_max("live_battery_charge_power")
+        self.current_data["statistics"]["house_consumption_today"] = db.get_todays("stats_house_consumption")
+        self.current_data["statistics"]["pv_production_today"] = db.get_todays("stats_pv_production")
+        self.current_data["statistics"]["battery_charged_energy_today"] = db.get_todays("stats_battery_charged_energy")
+        self.current_data["statistics"]["battery_discharged_energy_today"] = db.get_todays("stats_battery_discharged_energy")
+        self.current_data["statistics"]["grid_export_today"] = db.get_todays("stats_grid_export")
+        self.current_data["statistics"]["grid_import_today"] = db.get_todays("stats_grid_import")
+
 
     def __getDataFromAppliance(self):
         appliance_values = self.api.get_values()
@@ -140,6 +166,20 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                             "type": "square",
                             "icons": [
                                 {"name": "house", "size": 48, "fill": "currentColor"}
+                            ],
+                            "stats": [
+                                {
+                                "name": "Min",
+                                "id": "housePower_min"
+                                },
+                                {
+                                "name": "Avg",
+                                "id": "housePower_avg"
+                                },
+                                {
+                                "name": "Max",
+                                "id": "housePower_max"
+                                }
                             ]
                         },
                         {
@@ -148,6 +188,20 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                             "type": "square",
                             "icons": [
                                 {"name": "sun", "size": 48, "fill": "currentColor"}
+                            ],
+                            "stats": [
+                                {
+                                "name": "Min",
+                                "id": "pvProduction_min"
+                                },
+                                {
+                                "name": "Avg",
+                                "id": "pvProduction_avg"
+                                },
+                                {
+                                "name": "Max",
+                                "id": "pvProduction_max"
+                                }
                             ]
                         },
                         {
@@ -156,6 +210,20 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                             "type": "square",
                             "icons": [
                                 {"name": "lightning", "size": 48, "fill": "currentColor"}
+                            ],
+                            "stats": [
+                                {
+                                "name": "Min",
+                                "id": "gridPower_min"
+                                },
+                                {
+                                "name": "Avg",
+                                "id": "gridPower_avg"
+                                },
+                                {
+                                "name": "Max",
+                                "id": "gridPower_max"
+                                }
                             ]
                         },
                         {
@@ -164,6 +232,20 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                             "type": "square",
                             "icons": [
                                 {"name": "battery-full", "size": 48, "fill": "currentColor"}
+                            ],
+                            "stats": [
+                                {
+                                "name": "Min",
+                                "id": "batteryPower_min"
+                                },
+                                {
+                                "name": "Avg",
+                                "id": "batteryPower_avg"
+                                },
+                                {
+                                "name": "Max",
+                                "id": "batteryPower_max"
+                                }
                             ]
                         }
                     ]
@@ -205,37 +287,73 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                             "id": "houseConsumptionStats",
                             "title": "Consumption",
                             "type": "square",
-                            "icons": []
+                            "icons": [],
+                            "stats": [
+                                {
+                                "name": "Today",
+                                "id": "houseConsumption_today"
+                                }
+                            ]
                         },
                         {
                             "id": "pvProductionStats",
                             "title": "Production",
                             "type": "square",
-                            "icons": []
+                            "icons": [],
+                            "stats": [
+                                {
+                                "name": "Today",
+                                "id": "pvProduction_today"
+                                }
+                            ]
                         },
                         {
                             "id": "batteryChargedStats",
                             "title": "Bat. Charged",
                             "type": "square",
-                            "icons": []
+                            "icons": [],
+                            "stats": [
+                                {
+                                "name": "Today",
+                                "id": "batteryCharged_today"
+                                }
+                            ]
                         },
                         {
                             "id": "batteryDischaredStats",
                             "title": "Bat. Discharged",
                             "type": "square",
-                            "icons": []
+                            "icons": [],
+                            "stats": [
+                                {
+                                "name": "Today",
+                                "id": "batteryDischared_today"
+                                }
+                            ]
                         },
                         {
                             "id": "gridExportStats",
                             "title": "Grid Export",
                             "type": "square",
-                            "icons": []
+                            "icons": [],
+                            "stats": [
+                                {
+                                "name": "Today",
+                                "id": "gridExport_today"
+                                }
+                            ]
                         },
                         {
                             "id": "gridImportStats",
                             "title": "Grid Import",
                             "type": "square",
-                            "icons": []
+                            "icons": [],
+                            "stats": [
+                                {
+                                "name": "Today",
+                                "id": "gridImport_today"
+                                }
+                            ]
                         },
                     ]
                 },

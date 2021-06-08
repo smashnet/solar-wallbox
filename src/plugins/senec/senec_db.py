@@ -130,13 +130,13 @@ class SenecDB():
         return self.cursor.execute(f"SELECT MIN({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'").fetchone()[0]
 
     def get_avg_val_between_tss(self, column, ts1, ts2):
-        log.debug(f"SELECT AVERAGE({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'")
-        return self.cursor.execute(f"SELECT AVERAGE({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'").fetchone()[0]
+        log.debug(f"SELECT AVG({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'")
+        return self.cursor.execute(f"SELECT AVG({column}) FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}'").fetchone()[0]
 
     def get_diff_val_between_tss(self, column, ts1, ts2):
         log.debug(f"{column}, {ts1}, {ts2}")
-        val1 = self.cursor.execute(f"SELECT {column} FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}' ORDER BY ts ASC LIMIT 1").fetchone()[0]
-        val2 = self.cursor.execute(f"SELECT {column} FROM senec WHERE ts BETWEEN '{ts1.isoformat(sep=' ')}' AND '{ts2.isoformat(sep=' ')}' ORDER BY ts DESC LIMIT 1").fetchone()[0]
+        val1 = self.cursor.execute(f"SELECT {column} FROM senec WHERE ts > '{ts1.isoformat(sep=' ')}' ORDER BY ts ASC LIMIT 1").fetchone()[0]
+        val2 = self.cursor.execute(f"SELECT {column} FROM senec WHERE ts < '{ts2.isoformat(sep=' ')}' ORDER BY ts DESC LIMIT 1").fetchone()[0]
         return val2-val1
 
     def get_todays(self, metric):

@@ -1,11 +1,16 @@
 let batteryChargeState, batteryChargeStateIcon;
 let currentState, opHours, batCycles, batDesignCapacity, batMaxChargePower, batMaxDischargePower,
-housePower, pvProduction, gridPower, batteryPower, batteryVoltage, batteryCurrent, batteryPercentage,
-batteryRemainingTime, houseConsumptionStats, pvProductionStats, batteryChargedStats, batteryDischaredStats,
-gridExportStats, gridImportStats;
-
-let color_draining = "#ffe9e9";
-let color_charging = "#e9ffe9";
+housePower, housePower_min, housePower_avg, housePower_max,
+pvProduction, pvProduction_min, pvProduction_avg, pvProduction_max,
+gridPower, gridPower_min, gridPower_avg, gridPower_max,
+batteryPower, batteryPower_min, batteryPower_avg, batteryPower_max,
+batteryVoltage, batteryCurrent, batteryPercentage, batteryRemainingTime,
+houseConsumptionStats, houseConsumptionStats_today,
+pvProductionStats, pvProductionStats_today,
+batteryChargedStats, batteryChargedStats_today,
+batteryDischaredStats, batteryDischaredStats_today,
+gridExportStats, gridExportStats_today,
+gridImportStats, gridImportStats_today;
 
 window.addEventListener('DOMContentLoaded', function () {
     initVars();
@@ -26,20 +31,41 @@ function initVars() {
     batDesignCapacity = document.querySelector('#batDesignCapacity');
     batMaxChargePower = document.querySelector('#batMaxChargePower');
     batMaxDischargePower = document.querySelector('#batMaxDischargePower');
+
     housePower = document.querySelector('#housePower');
+    housePower_min = document.querySelector('#housePower_min');
+    housePower_avg = document.querySelector('#housePower_avg');
+    housePower_max = document.querySelector('#housePower_max');
     pvProduction = document.querySelector('#pvProduction');
+    pvProduction_min = document.querySelector('#pvProduction_min');
+    pvProduction_avg = document.querySelector('#pvProduction_avg');
+    pvProduction_max = document.querySelector('#pvProduction_max');
     gridPower = document.querySelector('#gridPower');
+    gridPower_min = document.querySelector('#gridPower_min');
+    gridPower_avg = document.querySelector('#gridPower_avg');
+    gridPower_max = document.querySelector('#gridPower_max');
     batteryPower = document.querySelector('#batteryPower');
+    batteryPower_min = document.querySelector('#batteryPower_min');
+    batteryPower_avg = document.querySelector('#batteryPower_avg');
+    batteryPower_max = document.querySelector('#batteryPower_max');
+
     batteryVoltage = document.querySelector('#batteryVoltage');
     batteryCurrent = document.querySelector('#batteryCurrent');
     batteryPercentage = document.querySelector('#batteryPercentage');
     batteryRemainingTime = document.querySelector('#batteryRemainingTime');
+
     houseConsumptionStats = document.querySelector('#houseConsumptionStats');
+    houseConsumptionStats_today = document.querySelector('#houseConsumption_today');
     pvProductionStats = document.querySelector('#pvProductionStats');
+    pvProductionStats_today = document.querySelector('#pvProduction_today');
     batteryChargedStats = document.querySelector('#batteryChargedStats');
+    batteryChargedStats_today = document.querySelector('#batteryCharged_today');
     batteryDischaredStats = document.querySelector('#batteryDischaredStats');
+    batteryDischaredStats_today = document.querySelector('#batteryDischared_today');
     gridExportStats = document.querySelector('#gridExportStats');
+    gridExportStats_today = document.querySelector('#gridExport_today');
     gridImportStats = document.querySelector('#gridImportStats');
+    gridImportStats_today = document.querySelector('#gridImport_today');
 }
 
 function drawTestChart() {
@@ -82,9 +108,21 @@ function updateHelperHTML(json) {
 
     /* Consumption and Production */
     housePower.innerHTML = json['live_data']['house_power'].toFixed(2) + " W";
+    housePower_min.innerHTML = "Min: <br>" + json['live_data']['house_power_min'].toFixed(2) + " W";
+    housePower_avg.innerHTML = "Avg: <br>" + json['live_data']['house_power_avg'].toFixed(2) + " W";
+    housePower_max.innerHTML = "Max: <br>" + json['live_data']['house_power_max'].toFixed(2) + " W";
     pvProduction.innerHTML = json['live_data']['pv_production'].toFixed(2) + " W";
+    pvProduction_min.innerHTML = "Min: <br>" + json['live_data']['pv_production_min'].toFixed(2) + " W";
+    pvProduction_avg.innerHTML = "Avg: <br>" + json['live_data']['pv_production_avg'].toFixed(2) + " W";
+    pvProduction_max.innerHTML = "Max: <br>" + json['live_data']['pv_production_max'].toFixed(2) + " W";
     gridPower.innerHTML = json['live_data']['grid_power'].toFixed(2) + " W";
+    gridPower_min.innerHTML = "Min: <br>" + json['live_data']['grid_power_min'].toFixed(2) + " W";
+    gridPower_avg.innerHTML = "Avg: <br>" + json['live_data']['grid_power_avg'].toFixed(2) + " W";
+    gridPower_max.innerHTML = "Max: <br>" + json['live_data']['grid_power_max'].toFixed(2) + " W";
     batteryPower.innerHTML = json['live_data']['battery_charge_power'].toFixed(2) + " W";
+    batteryPower_min.innerHTML = "Min: <br>" + json['live_data']['battery_charge_power_min'].toFixed(2) + " W";
+    batteryPower_avg.innerHTML = "Avg: <br>" + json['live_data']['battery_charge_power_avg'].toFixed(2) + " W";
+    batteryPower_max.innerHTML = "Max: <br>" + json['live_data']['battery_charge_power_max'].toFixed(2) + " W";
 
     /* Battery */
     if(json['live_data']['battery_charge_power'] > 0) {
@@ -115,11 +153,17 @@ function updateHelperHTML(json) {
 
     /* Statistics */
     houseConsumptionStats.innerHTML = json['statistics']['house_consumption'].toFixed(2) + " kWh";
+    houseConsumptionStats_today.innerHTML = "Today: <br>" + json['statistics']['house_consumption_today'].toFixed(2) + " kWh";
     pvProductionStats.innerHTML = json['statistics']['pv_production'].toFixed(2) + " kWh";
+    pvProductionStats_today.innerHTML = "Today: <br>" + json['statistics']['pv_production_today'].toFixed(2) + " kWh";
     batteryChargedStats.innerHTML = json['statistics']['battery_charged_energy'].toFixed(2) + " kWh";
+    batteryChargedStats_today.innerHTML = "Today: <br>" + json['statistics']['battery_charged_energy_today'].toFixed(2) + " kWh";
     batteryDischaredStats.innerHTML = json['statistics']['battery_discharged_energy'].toFixed(2) + " kWh";
+    batteryDischaredStats_today.innerHTML = "Today: <br>" + json['statistics']['battery_discharged_energy_today'].toFixed(2) + " kWh";
     gridExportStats.innerHTML = json['statistics']['grid_export'].toFixed(2) + " kWh";
+    gridExportStats_today.innerHTML = "Today: <br>" + json['statistics']['grid_export_today'].toFixed(2) + " kWh";
     gridImportStats.innerHTML = json['statistics']['grid_import'].toFixed(2) + " kWh";
+    gridImportStats_today.innerHTML = "Today: <br>" + json['statistics']['grid_import_today'].toFixed(2) + " kWh";
 
 }
 

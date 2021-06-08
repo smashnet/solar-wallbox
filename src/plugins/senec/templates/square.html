@@ -1,11 +1,21 @@
 <div class="flex-item">
-    <div class="card bg-light" style="width: 10rem;">
+    <div class="card bg-light square">
         <div class="card-body">
             {% for icon in block.icons %}
                 {% include vars.pluginPackage + '/icon.html' %}
             {% endfor %}
         <h5 class="card-title" id="{{ block.id }}">-</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{ block.title }}</h6>
+        {% if block.stats is defined %}
+        <hr class="mb-0"/>
+        <div class="container-fluid container-stats">
+            <span class="d-inline-flex">
+                {% for stat in block.stats %}
+                <div class="small-stats mr-2" id="{{ stat.id }}">{{ stat.name }}: -</div>
+                {% endfor %}
+            </span>
+        </div>
+        {% endif %}
         </div>
     </div>
 </div>

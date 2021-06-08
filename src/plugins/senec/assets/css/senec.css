@@ -34,6 +34,18 @@ main {
     text-align: left;
 }
 
+.square {
+    width: 13rem;
+}
+
+.small-stats {
+    font-size: 0.6rem;
+}
+
+.container-stats {
+    padding: 0;
+}
+
 .button {
     background-color: whitesmoke;
     border: none;
