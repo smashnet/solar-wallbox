@@ -45,7 +45,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         # This is run permanently in the background
         while True:
             # Get current data from appliance
-            self.current_data = self.__getDataFromAppliance()
+            self.current_data.update(self.__getDataFromAppliance())
             
             # Store current data to DB
             db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
