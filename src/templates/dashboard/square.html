@@ -1,0 +1,11 @@
+<div class="flex-item">
+    <div class="card bg-light square">
+        <div class="card-body card-body-wide">
+            {% for icon in block.icons %}
+                {% include vars.pluginPackage + '/icon.html' %}
+            {% endfor %}
+        <h5 class="card-title" id="{{ block.id }}">-</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ block.title }}</h6>
+        </div>
+    </div>
+</div>

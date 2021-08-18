@@ -46,7 +46,7 @@ class PVExcess(plugin_collection.Plugin):
             return
         # This is run permanently in the background
         while True:
-            data = source_plugin.getData()
+            data = source_plugin.get_data()
             try:
                 self.excess = {"excessPower": data['live_data']['pv_production'] - data['live_data']['house_power'] - data['live_data']['battery_charge_power']}
             except KeyError:
@@ -61,15 +61,15 @@ class PVExcess(plugin_collection.Plugin):
         res = {}
         template_vars['name'] = type(self).__name__
         if (self.__get_output_format(req) == "json"):
-            res = self.getData()
+            res = self.get_data()
             resp.media = res
             return
         res_web = self.__get_web_dict()
         self.__send_response(res_web, resp, template_vars)
 
-    def getData(self):
+    def get_data(self):
         """
-        getData can be used by other plugins. Values delivered are:
+        get_data can be used by other plugins. Values delivered are:
         {
             "excessPower": 0.0   # Excess power (in W)
         }
@@ -79,7 +79,7 @@ class PVExcess(plugin_collection.Plugin):
     def __find_source_and_consumer_plugins(self, other_plugins):
         source_plugin = False
         consumer_plugin = False
-        for plugin in other_plugins:
+        for plugin in other_plugins.get_plugins():
             if plugin.type == "source":
                 source_plugin = plugin
             if plugin.type == "consumer":

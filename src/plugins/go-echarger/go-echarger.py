@@ -47,6 +47,12 @@ class GoEcharger(plugin_collection.Plugin):
             return
         resp.html = self.webserver.render_template("go-echarger/index.html", viewmodel)
 
+    def get_data(self, device_no):
+        """
+        get_data can be used by other plugins.
+        """
+        return self.devices[device_no].get_status()
+
     def __create_view_model(self, req):
         # Path: plugin_path + /
         return {

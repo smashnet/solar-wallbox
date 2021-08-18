@@ -3,7 +3,6 @@ import time
 
 import json
 import logging
-import responder
 
 from web_server import WebServer
 from plugin_collection import PluginCollection
