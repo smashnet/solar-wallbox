@@ -44,7 +44,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
     def runtime(self, other_plugins):
         # This is run permanently in the background
         while True:
-            self.current_data = self.__getDataFromAppliance()
+            self.current_data = self.__get_data_from_appliance()
             db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
             db.insert_measurement(self.current_data)
             db.close()
@@ -58,10 +58,10 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
             return
         resp.html = self.webserver.render_template("senec/index.html", viewmodel)
 
-    def getData(self):
+    def get_data(self):
         """
-        getData can be used by other plugins.
-        Plugins of type "source" should always use the structure shown in __getDataFromAppliance()
+        get_data can be used by other plugins.
+        Plugins of type "source" should always use the structure shown in __get_data_from_appliance()
         """
         return self.current_data
 
@@ -73,7 +73,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
             "structure": self.__get_web_dict()
         }
 
-    def __getDataFromAppliance(self):
+    def __get_data_from_appliance(self):
         appliance_values = self.api.get_values()
         if not "error" in appliance_values:
             # Transform senec data structure to our data structure

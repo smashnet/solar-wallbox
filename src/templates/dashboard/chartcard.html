@@ -1,0 +1,12 @@
+<div class="flex-item">
+    <div class="card bg-light" style="width: 20.5rem;">
+        <canvas class="card-img-top chartjs-render-monitor" id="{{ block.chart_id }}"></canvas>
+        <div class="card-body">
+            {% for icon in block.icons %}
+                {% include vars.pluginPackage + '/icon.html' %}
+            {% endfor %}
+        <h5 class="card-title" id="{{ block.current_val_id }}">-</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ block.title }}</h6>
+        </div>
+    </div>
+</div>

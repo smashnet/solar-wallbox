@@ -30,7 +30,7 @@ class WebServer:
         log.info("Starting plugin runtimes...")
         for plugin in self.plugins.get_plugins():
             if plugin.has_runtime:
-                plugin_runtime_thread = threading.Thread(target=plugin.runtime, args=(self.plugins.get_plugins(),), daemon=True)
+                plugin_runtime_thread = threading.Thread(target=plugin.runtime, args=(self.plugins,), daemon=True)
                 plugin_runtime_thread.start()
 
     def render_template(self, path, template_vars=None):

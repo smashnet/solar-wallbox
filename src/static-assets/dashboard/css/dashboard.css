@@ -1,0 +1,77 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+body h1 {
+    text-align: center;
+}
+body h2 {
+    text-align: center;
+}
+main {
+    padding: 15px; 
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    text-align: center;
+    max-width: 1000px;
+}
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.flex-item {
+    margin: 5px;
+    /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+}
+
+.borderless {
+    border: 0;
+}
+
+.text-align-left {
+    text-align: left;
+}
+
+.button {
+    background-color: whitesmoke;
+    border: none;
+    width: 80px;
+    padding: 20px 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.card-body-wide {
+    padding: 1rem 0.5rem;
+}
+
+.square {
+    width: 10rem;
+}
+
+.square-onoff {
+    width: 10rem;
+}
+
+.square-wide {
+    width: 20.5rem;
+}
+
+.form-switch-padding {
+    padding-left: 3em;
+}
+
+#batteryChargeState {
+    margin-top: 0.3rem;
+}
+
+#batteryChargeStateIcon {
+    margin-left: 0.5rem;
+}
