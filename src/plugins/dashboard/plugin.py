@@ -74,7 +74,6 @@ class Dashboard(plugin_collection.Plugin):
         try:
             excessPower = self.current_data["house"]["live_data"]["pv_production"] \
                         - self.current_data["house"]["live_data"]["house_power"] \
-                        + self.current_data["wallbox1"]["charging"]["current_power"] \
                         + self.current_data["wallbox2"]["charging"]["current_power"]
             log.info(f"Excess power: {round(excessPower, 2)} W")
             return excessPower >= watts
