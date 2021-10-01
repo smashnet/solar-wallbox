@@ -72,8 +72,7 @@ class Dashboard(plugin_collection.Plugin):
 
     def __weHaveExcessPowerFor(self, watts):
         try:
-            #excessPower = self.current_data["house"]["live_data"]["pv_production"] \
-            excessPower = 6000 \
+            excessPower = self.current_data["house"]["live_data"]["pv_production"] \
                         - self.current_data["house"]["live_data"]["house_power"] \
                         + self.current_data["wallbox1"]["charging"]["current_power"] \
                         + self.current_data["wallbox2"]["charging"]["current_power"]
