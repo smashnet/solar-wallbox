@@ -137,7 +137,7 @@ function updateHelperHTML(json) {
     let energyCharged = document.querySelector('#energyCharged');
     let totalEnergyCharged = document.querySelector('#totalEnergyCharged');
 
-    chargingPower.innerHTML  = json['charging']['current_power'] + " kW";
+    chargingPower.innerHTML  = json['charging']['current_power'] + " W";
     usedPhases.innerHTML  = json['charging']['pha_used'];
     energyCharged.innerHTML = json['charging']['energy'] + " kWh";
     totalEnergyCharged.innerHTML = json['energy_total']/10.0 + " kWh";

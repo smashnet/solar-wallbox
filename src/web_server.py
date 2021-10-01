@@ -8,7 +8,7 @@ log = logging.getLogger("WebServer")
 class WebServer:
     def __init__(self, settings, plugins):
         self.api = responder.API(
-            title="Electricity Control Center",
+            title="Solar Wallbox",
             version="0.0.1",
             description="See and control your energy data and control your wallbox.",
             static_dir=settings["common"]["static-assets"],

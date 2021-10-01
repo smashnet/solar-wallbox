@@ -1,6 +1,7 @@
 let batteryChargeState, batteryChargeStateIcon;
 let housePower, pvProduction, gridPower, batteryPower,
     wallbox1, wallbox1_switch, wallbox2, wallbox2_switch;
+let automaticCharging_switch;
 
 window.addEventListener('DOMContentLoaded', function () {
     initVars();
@@ -23,6 +24,8 @@ function initVars() {
     wallbox1_switch = document.querySelector('#wallbox1_switch');
     wallbox2 = document.querySelector('#wallbox2');
     wallbox2_switch = document.querySelector('#wallbox2_switch');
+
+    automaticCharging_switch = document.querySelector('#automaticCharging_switch');
 
     wallbox1_switch.addEventListener('change', function () {
         if(this.checked) {
@@ -75,6 +78,32 @@ function initVars() {
                 });
         }
     });
+
+    automaticCharging_switch.addEventListener('change', function () {
+        if(this.checked) {
+            fetch("/dashboard?setAutomaticCharging=1")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = false;
+                        console.log(json['error']);
+                    }
+                });
+        } else {
+            fetch("/dashboard?setAutomaticCharging=0")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = true;
+                        console.log(json['error']);
+                    }
+                });
+        }
+    });
 }
 
 function updateHTML() {
@@ -116,12 +145,14 @@ function updateHelperHTML(json) {
     batteryChargeState.innerHTML = json['house']['live_data']['battery_percentage'].toFixed(2) + " %";
 
     /* Consumers */
-    let houseConsumption = json['house']['live_data']['house_power'] - json['wallbox1']['charging']['current_power'] * 1000 - json['wallbox2']['charging']['current_power'] * 1000;
+    let houseConsumption = json['house']['live_data']['house_power'] - json['wallbox1']['charging']['current_power'] - json['wallbox2']['charging']['current_power'];
     housePower.innerHTML = houseConsumption.toFixed(2) + " W";
-    wallbox1.innerHTML  = json['wallbox1']['charging']['current_power'] + " kW";
+    wallbox1.innerHTML  = json['wallbox1']['charging']['current_power'] + " W";
     wallbox1_switch.checked = json['wallbox1']['access_control']['allow_charging'];
-    wallbox2.innerHTML  = json['wallbox2']['charging']['current_power'] + " kW";
+    wallbox2.innerHTML  = json['wallbox2']['charging']['current_power'] + " W";
     wallbox2_switch.checked = json['wallbox2']['access_control']['allow_charging'];
+
+    automaticCharging_switch.checked = json['automaticCharging']
 }
 
 function getIcon(name, size, color="black") {

@@ -53,6 +53,9 @@ class GoEcharger(plugin_collection.Plugin):
         """
         return self.devices[device_no].get_status()
 
+    def set_charging(self, device_no, on_off):
+        self.devices[device_no].change_value(f"allow_charging={on_off}")
+
     def __create_view_model(self, req):
         # Path: plugin_path + /
         return {
@@ -280,12 +283,13 @@ class goeDevice():
     def get_status(self):
         try:
             res = requests.get(self.read_api, timeout=1.5).json()
+            self.updateData(res)
         except requests.Timeout:
-            return {"error": "Timeout while accessing wallbox."}
+            log.warning("Timeout while accessing wallbox.")
         except requests.ConnectionError:
-            return {"error": "Connection error while accessing wallbox."}
-        self.updateData(res)
-        return self.data
+            log.warning("Connection error while accessing wallbox.")
+        finally:
+            return self.data
     
     def updateData(self, status):
         # This is not the full set of available data available from the wallbox
@@ -327,9 +331,9 @@ class goeDevice():
             "charging"      : {
                 "status"        : charging_status_cases.get(status['car'], "Invalid charge status"),
                 "max_ampere"    : int(status['amp']), # 6-32
-                "current_power" : round(int(status['nrg'][11]) / 100.0, 3),
-                "pha_available"  : self.__get_number_of_available_phases(int(status['pha'])),
-                "pha_used"       : self.__get_number_of_used_phases(status['nrg']),
+                "current_power" : int(status['nrg'][11]) * 10,
+                "pha_available" : self.__get_number_of_available_phases(int(status['pha'])),
+                "pha_used"      : self.__get_number_of_used_phases(status['nrg']),
                 "energy"        : self.__dws_to_kWh(int(status['dws']))
             },
             "energy_total"   : int(status['eto']), # in 0.1 kWh

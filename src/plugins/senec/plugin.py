@@ -45,10 +45,10 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         # This is run permanently in the background
         while True:
             self.current_data = self.__get_data_from_appliance()
-            db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
-            db.insert_measurement(self.current_data)
-            db.close()
-            time.sleep(2)
+            #db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
+            #db.insert_measurement(self.current_data)
+            #db.close()
+            time.sleep(1)
 
     def endpoint(self, req, resp):
         viewmodel = self.__create_view_model(req)
