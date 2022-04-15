@@ -11,6 +11,7 @@ Kudos:
 """
 import requests
 import struct
+import logging
 
 __author__ = "Nicolas Inden"
 __copyright__ = "Copyright 2020, Nicolas Inden"
@@ -20,6 +21,8 @@ __version__ = "1.0.1"
 __maintainer__ = "Nicolas Inden"
 __email__ = "nico@smashnet.de"
 __status__ = "Production"
+
+log = logging.getLogger("Senec")
 
 class Senec():
 
@@ -37,11 +40,18 @@ class Senec():
 
     def get_all_values(self):
         request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
-        response = requests.post(self.read_api, json=request_json)
-        if response.status_code == 200:
-            return self.__decode_data(response.json())
-        else:
-            return {"error": f"Status code {response.status_code}"}
+        try:
+            response = requests.post(self.read_api, json=request_json)
+            if response.status_code == 200:
+                return self.__decode_data(response.json())
+            else:
+                return {"error": f"Status code {response.status_code}"}
+        except requests.Timeout:
+            log.warning(f"{self.device_ip}: Timeout while accessing Senec box.")
+        except requests.ConnectionError:
+            log.warning(f"{self.device_ip}: Connection error while accessing Senec box.")
+        finally:
+            return {}
 
     def __decode_data(self, data):
         return { k: self.__decode_data_helper(v) for k, v in data.items() }

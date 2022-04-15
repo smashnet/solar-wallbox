@@ -262,9 +262,9 @@ class goeDevice():
         try:
             res = requests.get(f"{self.write_api}{key}={val}", timeout=1.5).json()
         except requests.Timeout:
-            return {"error": "Timeout while accessing wallbox."}
+            return {"error": f"{self.name} ({self.ip}): Timeout while accessing wallbox."}
         except requests.ConnectionError:
-            return {"error": "Connection error while accessing wallbox."}
+            return {"error": f"{self.name} ({self.ip}): Connection error while accessing wallbox."}
         self.updateData(res)
         return {
             "msg": "success!",
@@ -285,9 +285,9 @@ class goeDevice():
             res = requests.get(self.read_api, timeout=1.5).json()
             self.updateData(res)
         except requests.Timeout:
-            log.warning("Timeout while accessing wallbox.")
+            log.warning(f"{self.name} ({self.ip}): Timeout while accessing wallbox.")
         except requests.ConnectionError:
-            log.warning("Connection error while accessing wallbox.")
+            log.warning(f"{self.name} ({self.ip}): Connection error while accessing wallbox.")
         finally:
             return self.data
     
