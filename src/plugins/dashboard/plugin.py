@@ -8,6 +8,7 @@ import logging
 
 import plugin_collection
 
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("Dashboard")
 
 class Dashboard(plugin_collection.Plugin):

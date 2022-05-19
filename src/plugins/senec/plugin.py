@@ -10,6 +10,7 @@ import plugin_collection
 from .senec import Senec
 from .senec_db import SenecDB
 
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("Senec")
 
 class SenecHomeV3Hybrid(plugin_collection.Plugin):
@@ -44,7 +45,9 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
     def runtime(self, other_plugins):
         # This is run permanently in the background
         while True:
-            self.current_data = self.__get_data_from_appliance()
+            tmp = self.__get_data_from_appliance()
+            if "general" in tmp:
+                self.current_data = tmp
             #db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
             #db.insert_measurement(self.current_data)
             #db.close()
@@ -77,38 +80,41 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         appliance_values = self.api.get_values()
         if not "error" in appliance_values:
             # Transform senec data structure to our data structure
-            return {
-                "general": {
-                    "current_state"         : appliance_values["STATISTIC"]["CURRENT_STATE"],                   # Current state of the system
-                    "hours_of_operation"    : appliance_values["ENERGY"]["STAT_HOURS_OF_OPERATION"]             # Appliance hours of operation
-                },
-                "live_data": {
-                    "house_power"           : appliance_values["ENERGY"]["GUI_HOUSE_POW"],                      # House power consumption (W)
-                    "pv_production"         : appliance_values["ENERGY"]["GUI_INVERTER_POWER"],                 # PV production (W)
-                    "grid_power"            : appliance_values["ENERGY"]["GUI_GRID_POW"],                       # Grid power: negative if exporting, positiv if importing (W)
-                    "battery_charge_power"  : appliance_values["ENERGY"]["GUI_BAT_DATA_POWER"],                 # Battery charge power: negative if discharging, positiv if charging (W)
-                    "battery_charge_current": appliance_values["ENERGY"]["GUI_BAT_DATA_CURRENT"],               # Battery charge current: negative if discharging, positiv if charging (A)
-                    "battery_voltage"       : appliance_values["ENERGY"]["GUI_BAT_DATA_VOLTAGE"],               # Battery voltage (V)
-                    "battery_percentage"    : appliance_values["ENERGY"]["GUI_BAT_DATA_FUEL_CHARGE"]            # Remaining battery (percent)
-                },
-                "battery_information": {
-                    "design_capacity"       : appliance_values["FACTORY"]["DESIGN_CAPACITY"],                   # Battery design capacity (Wh)
-                    "max_charge_power"      : appliance_values["FACTORY"]["MAX_CHARGE_POWER_DC"],               # Battery max charging power (W)
-                    "max_discharge_power"   : appliance_values["FACTORY"]["MAX_DISCHARGE_POWER_DC"],            # Battery max discharging power (W)
-                    "cycles"                : appliance_values["BMS"]["CYCLES"],                                # List: Cycles per battery
-                    "charged_energy"        : appliance_values["BMS"]["CHARGED_ENERGY"],                        # List: Charged energy per battery
-                    "discharged_energy"     : appliance_values["BMS"]["DISCHARGED_ENERGY"]                      # List: Discharged energy per battery
-                },
-                "statistics": {
-                    "timestamp"                 : appliance_values["STATISTIC"]["MEASURE_TIME"],                # Unix timestamp for above values (ms)
-                    "battery_charged_energy"    : appliance_values["STATISTIC"]["LIVE_BAT_CHARGE_MASTER"],      # Battery charge amount since installation (kWh)
-                    "battery_discharged_energy" : appliance_values["STATISTIC"]["LIVE_BAT_DISCHARGE_MASTER"],   # Battery discharge amount since installation (kWh)
-                    "grid_export"               : appliance_values["STATISTIC"]["LIVE_GRID_EXPORT"],            # Grid export amount since installation (kWh)
-                    "grid_import"               : appliance_values["STATISTIC"]["LIVE_GRID_IMPORT"],            # Grid import amount since installation (kWh)
-                    "house_consumption"         : appliance_values["STATISTIC"]["LIVE_HOUSE_CONS"],             # House consumption since installation (kWh)
-                    "pv_production"             : appliance_values["STATISTIC"]["LIVE_PV_GEN"]                  # PV generated power since installation (kWh)
+            try:
+                return {
+                    "general": {
+                        "current_state"         : appliance_values["STATISTIC"]["CURRENT_STATE"],                   # Current state of the system
+                        "hours_of_operation"    : appliance_values["ENERGY"]["STAT_HOURS_OF_OPERATION"]             # Appliance hours of operation
+                    },
+                    "live_data": {
+                        "house_power"           : appliance_values["ENERGY"]["GUI_HOUSE_POW"],                      # House power consumption (W)
+                        "pv_production"         : appliance_values["ENERGY"]["GUI_INVERTER_POWER"],                 # PV production (W)
+                        "grid_power"            : appliance_values["ENERGY"]["GUI_GRID_POW"],                       # Grid power: negative if exporting, positiv if importing (W)
+                        "battery_charge_power"  : appliance_values["ENERGY"]["GUI_BAT_DATA_POWER"],                 # Battery charge power: negative if discharging, positiv if charging (W)
+                        "battery_charge_current": appliance_values["ENERGY"]["GUI_BAT_DATA_CURRENT"],               # Battery charge current: negative if discharging, positiv if charging (A)
+                        "battery_voltage"       : appliance_values["ENERGY"]["GUI_BAT_DATA_VOLTAGE"],               # Battery voltage (V)
+                        "battery_percentage"    : appliance_values["ENERGY"]["GUI_BAT_DATA_FUEL_CHARGE"]            # Remaining battery (percent)
+                    },
+                    "battery_information": {
+                        "design_capacity"       : appliance_values["FACTORY"]["DESIGN_CAPACITY"],                   # Battery design capacity (Wh)
+                        "max_charge_power"      : appliance_values["FACTORY"]["MAX_CHARGE_POWER_DC"],               # Battery max charging power (W)
+                        "max_discharge_power"   : appliance_values["FACTORY"]["MAX_DISCHARGE_POWER_DC"],            # Battery max discharging power (W)
+                        "cycles"                : appliance_values["BMS"]["CYCLES"],                                # List: Cycles per battery
+                        "charged_energy"        : appliance_values["BMS"]["CHARGED_ENERGY"],                        # List: Charged energy per battery
+                        "discharged_energy"     : appliance_values["BMS"]["DISCHARGED_ENERGY"]                      # List: Discharged energy per battery
+                    },
+                    "statistics": {
+                        "timestamp"                 : appliance_values["STATISTIC"]["MEASURE_TIME"],                # Unix timestamp for above values (ms)
+                        "battery_charged_energy"    : appliance_values["STATISTIC"]["LIVE_BAT_CHARGE_MASTER"],      # Battery charge amount since installation (kWh)
+                        "battery_discharged_energy" : appliance_values["STATISTIC"]["LIVE_BAT_DISCHARGE_MASTER"],   # Battery discharge amount since installation (kWh)
+                        "grid_export"               : appliance_values["STATISTIC"]["LIVE_GRID_EXPORT"],            # Grid export amount since installation (kWh)
+                        "grid_import"               : appliance_values["STATISTIC"]["LIVE_GRID_IMPORT"],            # Grid import amount since installation (kWh)
+                        "house_consumption"         : appliance_values["STATISTIC"]["LIVE_HOUSE_CONS"],             # House consumption since installation (kWh)
+                        "pv_production"             : appliance_values["STATISTIC"]["LIVE_PV_GEN"]                  # PV generated power since installation (kWh)
+                    }
                 }
-            }
+            except KeyError as e:
+                log.error(f"Failed parsing data from SENEC API: {e}")
 
     def __get_output_format(self, req):
         try:

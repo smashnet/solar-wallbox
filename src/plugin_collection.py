@@ -9,6 +9,7 @@ import logging
 Greatfully taken from: https://github.com/gdiepen/python_plugin_example
 """
 
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("PluginCollection")
 
 class Plugin(object):

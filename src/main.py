@@ -7,7 +7,7 @@ import logging
 from web_server import WebServer
 from plugin_collection import PluginCollection
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("Main")
 
 if __name__ == "__main__":

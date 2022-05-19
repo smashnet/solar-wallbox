@@ -12,7 +12,7 @@ from datetime import datetime
 
 from .senec_db import SenecDB
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.DEBUG)
 log = logging.getLogger("SenecDB-Tests")
 db_file = "./test.db"
 

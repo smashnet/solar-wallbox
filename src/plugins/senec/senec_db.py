@@ -20,6 +20,7 @@ __maintainer__ = "Nicolas Inden"
 __email__ = "nico@smashnet.de"
 __status__ = "Alpha"
 
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("SenecDB")
 log.setLevel(logging.INFO)
 

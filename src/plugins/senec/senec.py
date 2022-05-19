@@ -22,6 +22,7 @@ __maintainer__ = "Nicolas Inden"
 __email__ = "nico@smashnet.de"
 __status__ = "Production"
 
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("Senec")
 
 class Senec():
@@ -86,8 +87,12 @@ class Senec():
 
     def __substitute_system_state(self, data):
         system_state = data['STATISTIC']['CURRENT_STATE']
-        data['STATISTIC']['CURRENT_STATE'] = SYSTEM_STATE_NAME[system_state]
-        return data
+        try:
+            data['STATISTIC']['CURRENT_STATE'] = SYSTEM_STATE_NAME[system_state]
+        except KeyError as e:
+            log.error(f"Failed substituting system state: {e}")
+        finally:
+            return data
 
 BASIC_REQUEST = {
     'STATISTIC': {
