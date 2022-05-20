@@ -41,11 +41,17 @@ class Senec():
                 log.warning(f"Status code {response.status_code}")
                 return {"error": f"Status code {response.status_code}"}
         except requests.Timeout:
-            log.warning(f"{self.device_ip}: Timeout while accessing Senec box.")
-            return {"error": f"{self.device_ip}: Timeout while accessing Senec box."}
+            errmsg = f"{self.device_ip}: Timeout while accessing Senec box."
+            log.warning(errmsg)
+            return {"error": errmsg}
         except requests.ConnectionError:
-            log.warning(f"{self.device_ip}: Connection error while accessing Senec box.")
-            return {"error": f"{self.device_ip}: Connection error while accessing Senec box."}
+            errmsg = f"{self.device_ip}: Connection error while accessing Senec box."
+            log.warning(errmsg)
+            return {"error": errmsg}
+        except requests.exceptions.JSONDecodeError as e:
+            errmsg = f"{self.device_ip}: Could not decode JSON response: {e}"
+            log.warning(errmsg)
+            return {"error": errmsg}
 
     def get_all_values(self):
         request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}

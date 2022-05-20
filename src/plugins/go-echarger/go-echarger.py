@@ -7,6 +7,7 @@ import requests
 
 import plugin_collection
 
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("GoEcharger")
 
 class GoEcharger(plugin_collection.Plugin):
