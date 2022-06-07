@@ -101,6 +101,7 @@ class Senec():
             data['STATISTIC']['CURRENT_STATE'] = SYSTEM_STATE_NAME[system_state]
         except KeyError as e:
             log.error(f"Failed substituting system state: {e}")
+            data['STATISTIC']['CURRENT_STATE'] = f"unknown ({system_state})"
         finally:
             return data
 
