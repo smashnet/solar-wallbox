@@ -46,7 +46,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         # This is run permanently in the background
         while True:
             tmp = self.__get_data_from_appliance()
-            if "general" in tmp:
+            if not "error" in tmp:
                 self.current_data = tmp
             #db = SenecDB(f"{self.settings['db_path']}/{self.settings['db_file']}")
             #db.insert_measurement(self.current_data)
@@ -115,6 +115,8 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                 }
             except KeyError as e:
                 log.error(f"Failed parsing data from SENEC API: {e}")
+        else:
+            return appliance_values
 
     def __get_output_format(self, req):
         try:

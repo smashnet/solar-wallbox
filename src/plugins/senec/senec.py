@@ -52,6 +52,10 @@ class Senec():
             errmsg = f"{self.device_ip}: Could not decode JSON response: {e}"
             log.warning(errmsg)
             return {"error": errmsg}
+        except Exception as e:
+            errmsg = f"{self.device_ip}: Other exception: {e}"
+            log.warning(errmsg)
+            return {"error": errmsg}
 
     def get_all_values(self):
         request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
@@ -232,7 +236,8 @@ SYSTEM_STATE_NAME = {
     88: "GRID OPERATOR: DISCHARGE PROHIBITED",
     89: "SPARE CAPACITY",
     90: "SELFTEST ERROR",
-    91: "EARTH FAULT"
+    91: "EARTH FAULT",
+    95: "BATTERY DIAGNOSIS"
 }
 
 if __name__ == "__main__":
