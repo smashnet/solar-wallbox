@@ -9,6 +9,7 @@ Tested with: SENEC.Home V3 hybrid duo
 Kudos:
 * SYSTEM_STATE_NAME taken from https://github.com/mchwalisz/pysenec
 """
+from numpy import empty
 import requests
 import struct
 import logging
@@ -17,7 +18,7 @@ __author__ = "Nicolas Inden"
 __copyright__ = "Copyright 2020, Nicolas Inden"
 __credits__ = ["Nicolas Inden", "Mikołaj Chwalisz"]
 __license__ = "Apache-2.0 License"
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __maintainer__ = "Nicolas Inden"
 __email__ = "nico@smashnet.de"
 __status__ = "Production"
@@ -31,9 +32,10 @@ class Senec():
         self.device_ip = device_ip
         self.read_api  = f"http://{device_ip}/lala.cgi"
 
-    def get_values(self):
+    def get_values(self, request_json = {}):
+        if not request_json: request_json = BASIC_REQUEST
         try:
-            response = requests.post(self.read_api, json=BASIC_REQUEST)
+            response = requests.post(self.read_api, json=request_json)
             if response.status_code == 200:
                 res = self.__decode_data(response.json())
                 return self.__substitute_system_state(res)
@@ -59,19 +61,7 @@ class Senec():
 
     def get_all_values(self):
         request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
-        try:
-            response = requests.post(self.read_api, json=request_json)
-            if response.status_code == 200:
-                return self.__decode_data(response.json())
-            else:
-                log.warning(f"Status code {response.status_code}")
-                return {"error": f"Status code {response.status_code}"}
-        except requests.Timeout:
-            log.warning(f"{self.device_ip}: Timeout while accessing Senec box.")
-            return {"error": f"{self.device_ip}: Timeout while accessing Senec box."}
-        except requests.ConnectionError:
-            log.warning(f"{self.device_ip}: Connection error while accessing Senec box.")
-            return {"error": f"{self.device_ip}: Connection error while accessing Senec box."}
+        return self.get_values(request_json)
 
     def __decode_data(self, data):
         return { k: self.__decode_data_helper(v) for k, v in data.items() }
@@ -89,7 +79,7 @@ class Senec():
             return struct.unpack('!f', bytes.fromhex(value[3:]))[0]
         if value.startswith("u8_"):
             return struct.unpack('!B', bytes.fromhex(value[3:]))[0]
-        if value.startswith("i3_") or value.startswith("u3_") or value.startswith("u1_"):
+        if value.startswith("i3_") or value.startswith("i8_") or value.startswith("u3_") or value.startswith("u1_"):
             return int(value[3:], 16)
         if value.startswith("st_"):
             return value[3:]
@@ -245,5 +235,6 @@ SYSTEM_STATE_NAME = {
 }
 
 if __name__ == "__main__":
-    api = Senec("10.0.0.209")
+    api = Senec("10.0.0.50")
     print(api.get_values())
+    print(api.get_all_values())
