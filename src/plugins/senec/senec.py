@@ -9,16 +9,19 @@ Tested with: SENEC.Home V3 hybrid duo
 Kudos:
 * SYSTEM_STATE_NAME taken from https://github.com/mchwalisz/pysenec
 """
-from numpy import empty
+
 import requests
 import struct
 import logging
+import json
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 __author__ = "Nicolas Inden"
 __copyright__ = "Copyright 2020, Nicolas Inden"
 __credits__ = ["Nicolas Inden", "Mikołaj Chwalisz"]
 __license__ = "Apache-2.0 License"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 __maintainer__ = "Nicolas Inden"
 __email__ = "nico@smashnet.de"
 __status__ = "Production"
@@ -30,12 +33,12 @@ class Senec():
 
     def __init__(self, device_ip):
         self.device_ip = device_ip
-        self.read_api  = f"http://{device_ip}/lala.cgi"
+        self.read_api  = f"https://{device_ip}/lala.cgi"
 
     def get_values(self, request_json = {}):
         if not request_json: request_json = BASIC_REQUEST
         try:
-            response = requests.post(self.read_api, json=request_json)
+            response = requests.post(self.read_api, json=request_json, verify=False)
             if response.status_code == 200:
                 res = self.__decode_data(response.json())
                 return self.__substitute_system_state(res)
@@ -87,6 +90,8 @@ class Senec():
 
     def __substitute_system_state(self, data):
         system_state = data['STATISTIC']['CURRENT_STATE']
+        if system_state == "VARIABLE_NOT_FOUND":
+            return data
         try:
             data['STATISTIC']['CURRENT_STATE'] = SYSTEM_STATE_NAME[system_state]
         except KeyError as e:
@@ -236,5 +241,5 @@ SYSTEM_STATE_NAME = {
 
 if __name__ == "__main__":
     api = Senec("10.0.0.50")
-    print(api.get_values())
-    print(api.get_all_values())
+    #print(api.get_values())
+    print(json.dumps(api.get_all_values()))
