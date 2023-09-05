@@ -198,18 +198,18 @@ class Dashboard(plugin_collection.Plugin):
                     "title": "Automatic Charging",
                     "blocks": [
                         {
-                            "id": "automaticChargingGarage",
-                            "switch_id": "automaticChargingGarage_switch",
-                            "title": "Sun Charging (Garage)",
+                            "id": "automaticChargingParking",
+                            "switch_id": "automaticChargingParking_switch",
+                            "title": "Sun Charging (Parking)",
                             "type": "square_onoff",
                             "icons": [
                                 {"name": "sun", "size": 48, "fill": "currentColor"}
                             ]
                         },
                         {
-                            "id": "automaticChargingParking",
-                            "switch_id": "automaticChargingParking_switch",
-                            "title": "Sun Charging (Parking)",
+                            "id": "automaticChargingGarage",
+                            "switch_id": "automaticChargingGarage_switch",
+                            "title": "Sun Charging (Garage)",
                             "type": "square_onoff",
                             "icons": [
                                 {"name": "sun", "size": 48, "fill": "currentColor"}
