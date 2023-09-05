@@ -200,7 +200,7 @@ class Dashboard(plugin_collection.Plugin):
                         {
                             "id": "automaticChargingParking",
                             "switch_id": "automaticChargingParking_switch",
-                            "title": "Sun Charging (Parking)",
+                            "title": "Sun Charging (Parkplatz)",
                             "type": "square_onoff",
                             "icons": [
                                 {"name": "sun", "size": 48, "fill": "currentColor"}
