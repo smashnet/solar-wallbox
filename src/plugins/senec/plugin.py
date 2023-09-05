@@ -143,19 +143,19 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                     "title": "Consumption and Production",
                     "blocks": [
                         {
-                            "id": "housePower",
-                            "title": "Consumption",
-                            "type": "square",
-                            "icons": [
-                                {"name": "house", "size": 48, "fill": "currentColor"}
-                            ]
-                        },
-                        {
                             "id": "pvProduction",
                             "title": "Production",
                             "type": "square",
                             "icons": [
                                 {"name": "sun", "size": 48, "fill": "currentColor"}
+                            ]
+                        },
+                        {
+                            "id": "housePower",
+                            "title": "Consumption",
+                            "type": "square",
+                            "icons": [
+                                {"name": "house", "size": 48, "fill": "currentColor"}
                             ]
                         },
                         {
@@ -205,48 +205,48 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                         }
                     ]
                 },
-                {
-                    "title": "Statistics",
-                    "prelude": "Accumulated values since system installation:",
-                    "blocks": [
-                        {
-                            "id": "houseConsumptionStats",
-                            "title": "Consumption",
-                            "type": "square",
-                            "icons": []
-                        },
-                        {
-                            "id": "pvProductionStats",
-                            "title": "Production",
-                            "type": "square",
-                            "icons": []
-                        },
-                        {
-                            "id": "batteryChargedStats",
-                            "title": "Bat. Charged",
-                            "type": "square",
-                            "icons": []
-                        },
-                        {
-                            "id": "batteryDischaredStats",
-                            "title": "Bat. Discharged",
-                            "type": "square",
-                            "icons": []
-                        },
-                        {
-                            "id": "gridExportStats",
-                            "title": "Grid Export",
-                            "type": "square",
-                            "icons": []
-                        },
-                        {
-                            "id": "gridImportStats",
-                            "title": "Grid Import",
-                            "type": "square",
-                            "icons": []
-                        },
-                    ]
-                },
+                #{
+                #    "title": "Statistics",
+                #    "prelude": "Accumulated values since system installation:",
+                #    "blocks": [
+                #        {
+                #            "id": "houseConsumptionStats",
+                #            "title": "Consumption",
+                #            "type": "square",
+                #            "icons": []
+                #        },
+                #        {
+                #            "id": "pvProductionStats",
+                #            "title": "Production",
+                #            "type": "square",
+                #            "icons": []
+                #        },
+                #        {
+                #            "id": "batteryChargedStats",
+                #            "title": "Bat. Charged",
+                #            "type": "square",
+                #            "icons": []
+                #        },
+                #        {
+                #            "id": "batteryDischaredStats",
+                #            "title": "Bat. Discharged",
+                #            "type": "square",
+                #            "icons": []
+                #        },
+                #        {
+                #            "id": "gridExportStats",
+                #            "title": "Grid Export",
+                #            "type": "square",
+                #            "icons": []
+                #        },
+                #        {
+                #            "id": "gridImportStats",
+                #            "title": "Grid Import",
+                #            "type": "square",
+                #            "icons": []
+                #        },
+                #    ]
+                #},
                 {
                     "title": "General",
                     "blocks": [
@@ -257,7 +257,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                                 {"name": "file-post", "size": 48, "fill": "currentColor"}
                             ],
                             "contents": [
-                                {"name": "Current State", "id": "currentState"},
+                                #{"name": "Current State", "id": "currentState"},
                                 {"name": "Hours of Operation", "id": "opHours"},
                                 {"name": "Battery Cycles", "id": "batCycles"},
                                 {"name": "Battery Design Capacity", "id": "batDesignCapacity"},

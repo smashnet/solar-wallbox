@@ -22,7 +22,8 @@ class Dashboard(plugin_collection.Plugin):
         self.has_runtime = True
         self.current_data = {}
         self.settings = {}
-        self.automaticChargingEnabled = False
+        self.sunChargingParking = False
+        self.sunChargingGarage = False
         self.enoughPowerCounter = 0
         self.automaticChargingPowerAvailable = False
 
@@ -45,31 +46,34 @@ class Dashboard(plugin_collection.Plugin):
                 "house": senec.get_data(),
                 "wallbox1": goe.get_data(0),
                 "wallbox2": goe.get_data(1),
-                "automaticCharging": self.automaticChargingEnabled
+                "sunChargingParking": self.sunChargingParking,
+                "sunChargingGarage": self.sunChargingGarage
             }
 
             # Calculate if charging should be allowed:
             # If spare energy is > 3500W for 30s then allow charging
             # Where spare energy is: PV production - house consumption + currently charging
-            if(self.automaticChargingEnabled):
-                self.__automaticChargingExcessPower(goe, 3500, 30)
+            if(self.sunChargingParking):
+                self.__automaticChargingExcessPower(goe, 0, 3500, 30)
+            if(self.sunChargingGarage):
+                self.__automaticChargingExcessPower(goe, 1, 3500, 30)
             
             time.sleep(1)
 
-    def __automaticChargingExcessPower(self, goe, watts, seconds):
+    def __automaticChargingExcessPower(self, goe, device_no, watts, seconds):
         weHaveExcessPower = self.__weHaveExcessPowerFor(watts)
         if(weHaveExcessPower and self.enoughPowerCounter < seconds):
             self.enoughPowerCounter += 1
             if(self.enoughPowerCounter == seconds):
                 log.info(f"We have enough power to charge for {seconds} seconds. Activating wallbox!")
                 self.automaticChargingPowerAvailable = True
-                goe.set_charging(device_no=1,on_off=1)
+                goe.set_charging(device_no,on_off=1)
         elif(not weHaveExcessPower and self.enoughPowerCounter > 0):
             self.enoughPowerCounter -= 1
             if(self.enoughPowerCounter == 0):
                 log.info(f"Not enough power to charge for {seconds} seconds. Deactivating wallbox!")
                 self.automaticChargingPowerAvailable = False
-                goe.set_charging(device_no=1,on_off=0)
+                goe.set_charging(device_no,on_off=0)
 
     def __weHaveExcessPowerFor(self, watts):
         try:
@@ -104,12 +108,18 @@ class Dashboard(plugin_collection.Plugin):
 
     def __process_req_params(self, req):
         try:
-            if(int(req.params['setAutomaticCharging']) == 1):
+            if(int(req.params['setAutomaticChargingParking']) == 1):
                 log.info("Automatic charging enabled!")
-                self.automaticChargingEnabled = True
-            elif(int(req.params['setAutomaticCharging']) == 0):
+                self.sunChargingParking = True
+            elif(int(req.params['setAutomaticChargingParking']) == 0):
                 log.info("Automatic charging disabled!")
-                self.automaticChargingEnabled = False
+                self.sunChargingParking = False
+            elif(int(req.params['setAutomaticChargingGarage']) == 1):
+                log.info("Automatic charging disabled!")
+                self.sunChargingGarage = True
+            elif(int(req.params['setAutomaticChargingGarage']) == 0):
+                log.info("Automatic charging disabled!")
+                self.sunChargingGarage = False
             return True
         except KeyError:
             return False
@@ -188,9 +198,18 @@ class Dashboard(plugin_collection.Plugin):
                     "title": "Automatic Charging",
                     "blocks": [
                         {
-                            "id": "automaticCharging",
-                            "switch_id": "automaticCharging_switch",
+                            "id": "automaticChargingGarage",
+                            "switch_id": "automaticChargingGarage_switch",
                             "title": "Sun Charging (Garage)",
+                            "type": "square_onoff",
+                            "icons": [
+                                {"name": "sun", "size": 48, "fill": "currentColor"}
+                            ]
+                        },
+                        {
+                            "id": "automaticChargingParking",
+                            "switch_id": "automaticChargingParking_switch",
+                            "title": "Sun Charging (Parking)",
                             "type": "square_onoff",
                             "icons": [
                                 {"name": "sun", "size": 48, "fill": "currentColor"}

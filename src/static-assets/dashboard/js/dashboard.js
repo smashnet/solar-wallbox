@@ -1,7 +1,7 @@
 let batteryChargeState, batteryChargeStateIcon;
 let housePower, pvProduction, gridPower, batteryPower,
     wallbox1, wallbox1_switch, wallbox2, wallbox2_switch;
-let automaticCharging_switch;
+let automaticCharging_switch, automaticChargingParking_switch;
 
 window.addEventListener('DOMContentLoaded', function () {
     initVars();
@@ -25,7 +25,8 @@ function initVars() {
     wallbox2 = document.querySelector('#wallbox2');
     wallbox2_switch = document.querySelector('#wallbox2_switch');
 
-    automaticCharging_switch = document.querySelector('#automaticCharging_switch');
+    automaticChargingGarage_switch = document.querySelector('#automaticChargingGarage_switch');
+    automaticChargingParking_switch = document.querySelector('#automaticChargingParking_switch');
 
     wallbox1_switch.addEventListener('change', function () {
         if(this.checked) {
@@ -79,9 +80,9 @@ function initVars() {
         }
     });
 
-    automaticCharging_switch.addEventListener('change', function () {
+    automaticChargingGarage_switch.addEventListener('change', function () {
         if(this.checked) {
-            fetch("/dashboard?setAutomaticCharging=1")
+            fetch("/dashboard?setAutomaticChargingGarage=1")
                 .then(response => {
                     return response.json();
                 })
@@ -92,7 +93,33 @@ function initVars() {
                     }
                 });
         } else {
-            fetch("/dashboard?setAutomaticCharging=0")
+            fetch("/dashboard?setAutomaticChargingGarage=0")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = true;
+                        console.log(json['error']);
+                    }
+                });
+        }
+    });
+
+    automaticChargingParking_switch.addEventListener('change', function () {
+        if(this.checked) {
+            fetch("/dashboard?setAutomaticChargingParking=1")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = false;
+                        console.log(json['error']);
+                    }
+                });
+        } else {
+            fetch("/dashboard?setAutomaticChargingParking=0")
                 .then(response => {
                     return response.json();
                 })
@@ -152,7 +179,8 @@ function updateHelperHTML(json) {
     wallbox2.innerHTML  = json['wallbox2']['charging']['current_power'] + " W";
     wallbox2_switch.checked = json['wallbox2']['access_control']['allow_charging'];
 
-    automaticCharging_switch.checked = json['automaticCharging']
+    automaticChargingParking_switch.checked = json['sunChargingParking']
+    automaticChargingGarage_switch.checked = json['sunChargingGarage']
 }
 
 function getIcon(name, size, color="black") {

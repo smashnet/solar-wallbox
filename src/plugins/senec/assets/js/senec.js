@@ -20,7 +20,7 @@ function initVars() {
     batteryChargeState = document.querySelector('#batteryChargeState');
     batteryChargeStateIcon = document.querySelector('#batteryChargeStateIcon');
 
-    currentState = document.querySelector('#currentState');
+    //currentState = document.querySelector('#currentState');
     opHours = document.querySelector('#opHours');
     batCycles = document.querySelector('#batCycles');
     batDesignCapacity = document.querySelector('#batDesignCapacity');
@@ -34,12 +34,12 @@ function initVars() {
     batteryCurrent = document.querySelector('#batteryCurrent');
     batteryPercentage = document.querySelector('#batteryPercentage');
     batteryRemainingTime = document.querySelector('#batteryRemainingTime');
-    houseConsumptionStats = document.querySelector('#houseConsumptionStats');
-    pvProductionStats = document.querySelector('#pvProductionStats');
-    batteryChargedStats = document.querySelector('#batteryChargedStats');
-    batteryDischaredStats = document.querySelector('#batteryDischaredStats');
-    gridExportStats = document.querySelector('#gridExportStats');
-    gridImportStats = document.querySelector('#gridImportStats');
+    //houseConsumptionStats = document.querySelector('#houseConsumptionStats');
+    //pvProductionStats = document.querySelector('#pvProductionStats');
+    //batteryChargedStats = document.querySelector('#batteryChargedStats');
+    //batteryDischaredStats = document.querySelector('#batteryDischaredStats');
+    //gridExportStats = document.querySelector('#gridExportStats');
+    //gridImportStats = document.querySelector('#gridImportStats');
 }
 
 function drawTestChart() {
@@ -73,7 +73,7 @@ function updateHTML() {
 
 function updateHelperHTML(json) {
     /* General - Infocard */
-    currentState.innerHTML = json['general']['current_state'];
+    //currentState.innerHTML = json['general']['current_state'];
     opHours.innerHTML = json['general']['hours_of_operation'] + " h";
     batCycles.innerHTML = json['battery_information']['cycles'];
     batDesignCapacity.innerHTML = json['battery_information']['design_capacity'] + " Wh";
@@ -114,12 +114,12 @@ function updateHelperHTML(json) {
     batteryPercentage.innerHTML = json['live_data']['battery_percentage'].toFixed(2) + " %"; 
 
     /* Statistics */
-    houseConsumptionStats.innerHTML = json['statistics']['house_consumption'].toFixed(2) + " kWh";
-    pvProductionStats.innerHTML = json['statistics']['pv_production'].toFixed(2) + " kWh";
-    batteryChargedStats.innerHTML = json['statistics']['battery_charged_energy'].toFixed(2) + " kWh";
-    batteryDischaredStats.innerHTML = json['statistics']['battery_discharged_energy'].toFixed(2) + " kWh";
-    gridExportStats.innerHTML = json['statistics']['grid_export'].toFixed(2) + " kWh";
-    gridImportStats.innerHTML = json['statistics']['grid_import'].toFixed(2) + " kWh";
+    //houseConsumptionStats.innerHTML = json['statistics']['house_consumption'].toFixed(2) + " kWh";
+    //pvProductionStats.innerHTML = json['statistics']['pv_production'].toFixed(2) + " kWh";
+    //batteryChargedStats.innerHTML = json['statistics']['battery_charged_energy'].toFixed(2) + " kWh";
+    //batteryDischaredStats.innerHTML = json['statistics']['battery_discharged_energy'].toFixed(2) + " kWh";
+    //gridExportStats.innerHTML = json['statistics']['grid_export'].toFixed(2) + " kWh";
+    //gridImportStats.innerHTML = json['statistics']['grid_import'].toFixed(2) + " kWh";
 
 }
 
