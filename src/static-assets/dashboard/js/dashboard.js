@@ -1,5 +1,5 @@
 let batteryChargeState, batteryChargeStateIcon;
-let housePower, pvProduction, gridPower, batteryPower,
+let housePower, pvProduction, gridPowerCard, gridPower, batteryPowerCard, batteryPower, batteryPowerIcon
     wallbox1, wallbox1_switch, wallbox2, wallbox2_switch;
 let automaticCharging_switch, automaticChargingParking_switch;
 
@@ -16,8 +16,11 @@ function initVars() {
     batteryChargeStateIcon = document.querySelector('#batteryChargeStateIcon');
 
     pvProduction = document.querySelector('#pvProduction');
+    gridPowerCard = document.querySelector('#gridPowerCard');
     gridPower = document.querySelector('#gridPower');
     batteryPower = document.querySelector('#batteryPower');
+    batteryPowerCard = document.querySelector('#batteryPowerCard');
+    batteryPowerIcon = document.querySelector('#batteryPowerIcon');
 
     housePower = document.querySelector('#housePower');
     wallbox1 = document.querySelector('#wallbox1');
@@ -147,27 +150,40 @@ function updateHTML() {
 function updateHelperHTML(json) {
     /* Production and Storage */
     pvProduction.innerHTML = json['house']['live_data']['pv_production'].toFixed(2) + " W";
+    if(json['house']['live_data']['grid_power'].toFixed(2) > 0) {
+        setSquareBackground(gridPowerCard, "LavenderBlush");
+    } else {
+        setSquareBackground(gridPowerCard, "PaleGreen");
+    }
     gridPower.innerHTML = json['house']['live_data']['grid_power'].toFixed(2) + " W";
     batteryPower.innerHTML = json['house']['live_data']['battery_charge_power'].toFixed(2) + " W";
 
-    if(json['house']['live_data']['battery_charge_power'] > 0) {
+    if(json['house']['live_data']['battery_charge_power'] >= 0) {
         /* Battery charging */
         if(json['house']['live_data']['battery_percentage'].toFixed(2) < 20.0) {
             updateBatteryChargeStateIcon(batteryChargeStateIcon, "battery-charging", 32, "red");
+            updateBatteryChargeStateIcon(batteryPowerIcon, "battery-charging", 48, "red");
         } else if (json['house']['live_data']['battery_percentage'].toFixed(2) < 50.0) {
             updateBatteryChargeStateIcon(batteryChargeStateIcon, "battery-charging", 32, "yellow");
+            updateBatteryChargeStateIcon(batteryPowerIcon, "battery-charging", 48, "yellow");
         } else if (json['house']['live_data']['battery_percentage'].toFixed(2) <= 100.0) {
             updateBatteryChargeStateIcon(batteryChargeStateIcon, "battery-charging", 32, "green");
+            updateBatteryChargeStateIcon(batteryPowerIcon, "battery-charging", 48, "green");
         }
+        setSquareBackground(batteryPowerCard, "PaleGreen");
     } else {
         /* Battery discharging */
         if(json['house']['live_data']['battery_percentage'].toFixed(2) < 20.0) {
             updateBatteryChargeStateIcon(batteryChargeStateIcon, "battery", 32, "red");
+            updateBatteryChargeStateIcon(batteryPowerIcon, "battery", 48, "red");
         } else if (json['house']['live_data']['battery_percentage'].toFixed(2) < 50.0) {
             updateBatteryChargeStateIcon(batteryChargeStateIcon, "battery-half", 32, "yellow");
+            updateBatteryChargeStateIcon(batteryPowerIcon, "battery-half", 48, "yellow");
         } else if (json['house']['live_data']['battery_percentage'].toFixed(2) <= 100.0) {
             updateBatteryChargeStateIcon(batteryChargeStateIcon, "battery-full", 32, "green");
+            updateBatteryChargeStateIcon(batteryPowerIcon, "battery-full", 48, "green");
         }
+        setSquareBackground(batteryPowerCard, "LavenderBlush");
     }
     batteryChargeState.innerHTML = json['house']['live_data']['battery_percentage'].toFixed(2) + " %";
 
@@ -181,6 +197,10 @@ function updateHelperHTML(json) {
 
     automaticChargingParking_switch.checked = json['sunChargingParking']
     automaticChargingGarage_switch.checked = json['sunChargingGarage']
+}
+
+function setSquareBackground(div, color) {
+    div.style.setProperty('background-color', color, 'important');
 }
 
 function getIcon(name, size, color="black") {
@@ -211,7 +231,7 @@ function updateBatteryChargeStateIcon(div, name, size, color="black") {
     if(div.children.length == 0) {
         div.appendChild(getIcon(name, size, color));
     } else {
-        div.replaceChild(getIcon(name, size, color), div.firstChild);
+        div.replaceChild(getIcon(name, size, color), div.firstElementChild);
     }
 }
 

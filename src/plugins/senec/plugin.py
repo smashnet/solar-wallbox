@@ -83,7 +83,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
             try:
                 return {
                     "general": {
-                        "current_state"         : appliance_values["STATISTIC"]["CURRENT_STATE"],                   # Current state of the system
+                        #"current_state"         : appliance_values["STATISTIC"]["CURRENT_STATE"],                   # Current state of the system
                         "hours_of_operation"    : appliance_values["ENERGY"]["STAT_HOURS_OF_OPERATION"]             # Appliance hours of operation
                     },
                     "live_data": {
@@ -103,15 +103,15 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                         "charged_energy"        : appliance_values["BMS"]["CHARGED_ENERGY"],                        # List: Charged energy per battery
                         "discharged_energy"     : appliance_values["BMS"]["DISCHARGED_ENERGY"]                      # List: Discharged energy per battery
                     },
-                    "statistics": {
-                        "timestamp"                 : appliance_values["STATISTIC"]["MEASURE_TIME"],                # Unix timestamp for above values (ms)
-                        "battery_charged_energy"    : appliance_values["STATISTIC"]["LIVE_BAT_CHARGE_MASTER"],      # Battery charge amount since installation (kWh)
-                        "battery_discharged_energy" : appliance_values["STATISTIC"]["LIVE_BAT_DISCHARGE_MASTER"],   # Battery discharge amount since installation (kWh)
-                        "grid_export"               : appliance_values["STATISTIC"]["LIVE_GRID_EXPORT"],            # Grid export amount since installation (kWh)
-                        "grid_import"               : appliance_values["STATISTIC"]["LIVE_GRID_IMPORT"],            # Grid import amount since installation (kWh)
-                        "house_consumption"         : appliance_values["STATISTIC"]["LIVE_HOUSE_CONS"],             # House consumption since installation (kWh)
-                        "pv_production"             : appliance_values["STATISTIC"]["LIVE_PV_GEN"]                  # PV generated power since installation (kWh)
-                    }
+                    #"statistics": {
+                    #    "timestamp"                 : appliance_values["STATISTIC"]["MEASURE_TIME"],                # Unix timestamp for above values (ms)
+                    #    "battery_charged_energy"    : appliance_values["STATISTIC"]["LIVE_BAT_CHARGE_MASTER"],      # Battery charge amount since installation (kWh)
+                    #    "battery_discharged_energy" : appliance_values["STATISTIC"]["LIVE_BAT_DISCHARGE_MASTER"],   # Battery discharge amount since installation (kWh)
+                    #    "grid_export"               : appliance_values["STATISTIC"]["LIVE_GRID_EXPORT"],            # Grid export amount since installation (kWh)
+                    #    "grid_import"               : appliance_values["STATISTIC"]["LIVE_GRID_IMPORT"],            # Grid import amount since installation (kWh)
+                    #    "house_consumption"         : appliance_values["STATISTIC"]["LIVE_HOUSE_CONS"],             # House consumption since installation (kWh)
+                    #    "pv_production"             : appliance_values["STATISTIC"]["LIVE_PV_GEN"]                  # PV generated power since installation (kWh)
+                    #}
                 }
             except KeyError as e:
                 log.error(f"Failed parsing data from SENEC API: {e}")

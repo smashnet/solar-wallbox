@@ -81,7 +81,7 @@ class Dashboard(plugin_collection.Plugin):
                         - self.current_data["house"]["live_data"]["house_power"] \
                         + self.current_data["wallbox1"]["charging"]["current_power"] \
                         + self.current_data["wallbox2"]["charging"]["current_power"]
-            log.info(f"Excess power: {round(excessPower, 2)} W")
+            log.debug(f"Excess power: {round(excessPower, 2)} W")
             return excessPower >= watts
         except KeyError:
             return False
@@ -108,21 +108,17 @@ class Dashboard(plugin_collection.Plugin):
 
     def __process_req_params(self, req):
         try:
-            if(int(req.params['setAutomaticChargingParking']) == 1):
-                log.info("Automatic charging enabled!")
-                self.sunChargingParking = True
-            elif(int(req.params['setAutomaticChargingParking']) == 0):
-                log.info("Automatic charging disabled!")
-                self.sunChargingParking = False
-            elif(int(req.params['setAutomaticChargingGarage']) == 1):
-                log.info("Automatic charging disabled!")
-                self.sunChargingGarage = True
-            elif(int(req.params['setAutomaticChargingGarage']) == 0):
-                log.info("Automatic charging disabled!")
-                self.sunChargingGarage = False
-            return True
+            if('setAutomaticChargingParking' in req.params):
+                self.sunChargingParking = int(req.params['setAutomaticChargingParking']) == 1
+                log.info(f"Sun charging for Parkplatz set to {self.sunChargingParking}")
+                return True
+            if('setAutomaticChargingGarage' in req.params):
+                self.sunChargingGarage = int(req.params['setAutomaticChargingGarage']) == 1
+                log.info(f"Sun charging for Garage set to {self.sunChargingGarage}")
+                return True
         except KeyError:
-            return False
+            log.warn(f"Unknown parameter: {req.params}")
+        return False
 
     def __get_output_format(self, req):
         try:
@@ -138,7 +134,8 @@ class Dashboard(plugin_collection.Plugin):
                     "title": "Production and Storage",
                     "blocks": [
                         {
-                            "id": "pvProduction",
+                            "id": "pvProductionCard",
+                            "textid": "pvProduction",
                             "title": "Production",
                             "type": "square",
                             "icons": [
@@ -146,7 +143,8 @@ class Dashboard(plugin_collection.Plugin):
                             ]
                         },
                         {
-                            "id": "gridPower",
+                            "id": "gridPowerCard",
+                            "textid": "gridPower",
                             "title": "Grid Power",
                             "type": "square",
                             "icons": [
@@ -154,11 +152,12 @@ class Dashboard(plugin_collection.Plugin):
                             ]
                         },
                         {
-                            "id": "batteryPower",
+                            "id": "batteryPowerCard",
+                            "textid": "batteryPower",
                             "title": "Battery Power",
                             "type": "square_wide",
                             "icons": [
-                                {"name": "battery-full", "size": 48, "fill": "currentColor"}
+                                {"name": "battery-full", "size": 48, "fill": "currentColor", "id": "batteryPowerIcon"}
                             ]
                         }
                     ]
@@ -167,7 +166,7 @@ class Dashboard(plugin_collection.Plugin):
                     "title": "Consumers",
                     "blocks": [
                         {
-                            "id": "housePower",
+                            "textid": "housePower",
                             "title": "House",
                             "type": "square_wide",
                             "icons": [

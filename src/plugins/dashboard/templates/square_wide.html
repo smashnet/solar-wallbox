@@ -1,10 +1,16 @@
 <div class="flex-item">
-    <div class="card bg-light square-wide">
+    <div {% if block.id is defined %}id="{{ block.id }}"{% endif %} class="card bg-light square-wide">
         <div class="card-body card-body-wide">
             {% for icon in block.icons %}
+            {% if icon.id is defined %}
+            <div id="{{ icon.id }}">
                 {% include vars.pluginPackage + '/icon.html' %}
+            </div>
+            {% else %}
+            {% include vars.pluginPackage + '/icon.html' %}
+            {% endif %}
             {% endfor %}
-        <h5 class="card-title" id="{{ block.id }}">-</h5>
+        <h5 class="card-title" id="{{ block.textid }}">-</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{ block.title }}</h6>
         </div>
     </div>

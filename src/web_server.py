@@ -3,7 +3,7 @@ import datetime
 import logging
 import threading
 
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.WARNING)
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',level=logging.INFO)
 log = logging.getLogger("WebServer")
 
 class WebServer:
