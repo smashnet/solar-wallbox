@@ -1,6 +1,6 @@
 let batteryChargeState, batteryChargeStateIcon;
 let housePower, pvProduction, gridPowerCard, gridPower, batteryPowerCard, batteryPower, batteryPowerIcon
-    wallbox1, wallbox1_switch, wallbox2, wallbox2_switch;
+    wallbox1, wallbox1_switch, wallbox2, wallbox2_switch, forceCharging_switch;
 let automaticCharging_switch, automaticChargingParking_switch;
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -21,6 +21,7 @@ function initVars() {
     batteryPower = document.querySelector('#batteryPower');
     batteryPowerCard = document.querySelector('#batteryPowerCard');
     batteryPowerIcon = document.querySelector('#batteryPowerIcon');
+    forceCharging_switch = document.querySelector('#forceCharging_switch');
 
     housePower = document.querySelector('#housePower');
     wallbox1 = document.querySelector('#wallbox1');
@@ -123,6 +124,32 @@ function initVars() {
                 });
         } else {
             fetch("/dashboard?setAutomaticChargingParking=0")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = true;
+                        console.log(json['error']);
+                    }
+                });
+        }
+    });
+
+    forceCharging_switch.addEventListener('change', function () {
+        if(this.checked) {
+            fetch("/dashboard?setForceCharging=1")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = false;
+                        console.log(json['error']);
+                    }
+                });
+        } else {
+            fetch("/dashboard?setForceCharging=0")
                 .then(response => {
                     return response.json();
                 })

@@ -21,6 +21,8 @@
                 {% for block in group.blocks %}
                     {% if block.type == "square" %}
                         {% include vars.pluginPackage + '/square.html' %}
+                    {% elif block.type == "square_switch" %}
+                        {% include vars.pluginPackage + '/square_switch.html' %}
                     {% elif block.type == "chartcard" %}
                         {% include vars.pluginPackage + '/chartcard.html' %}
                     {% elif block.type == "infocard" %}

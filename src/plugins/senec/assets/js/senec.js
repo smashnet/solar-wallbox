@@ -2,7 +2,7 @@ let batteryChargeState, batteryChargeStateIcon;
 let currentState, opHours, batCycles, batDesignCapacity, batMaxChargePower, batMaxDischargePower,
 housePower, pvProduction, gridPower, batteryPower, batteryVoltage, batteryCurrent, batteryPercentage,
 batteryRemainingTime, houseConsumptionStats, pvProductionStats, batteryChargedStats, batteryDischaredStats,
-gridExportStats, gridImportStats;
+gridExportStats, gridImportStats, forceChargingToggle;
 
 let color_draining = "#ffe9e9";
 let color_charging = "#e9ffe9";
@@ -34,12 +34,39 @@ function initVars() {
     batteryCurrent = document.querySelector('#batteryCurrent');
     batteryPercentage = document.querySelector('#batteryPercentage');
     batteryRemainingTime = document.querySelector('#batteryRemainingTime');
+    forceChargingToggle = document.querySelector('#forceChargingToggle');
     //houseConsumptionStats = document.querySelector('#houseConsumptionStats');
     //pvProductionStats = document.querySelector('#pvProductionStats');
     //batteryChargedStats = document.querySelector('#batteryChargedStats');
     //batteryDischaredStats = document.querySelector('#batteryDischaredStats');
     //gridExportStats = document.querySelector('#gridExportStats');
     //gridImportStats = document.querySelector('#gridImportStats');
+
+    forceChargingToggle.addEventListener('change', function () {
+        if(this.checked) {
+            fetch("/senec?forceCharge=true")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = false;
+                        console.log(json['error']);
+                    }
+                });
+        } else {
+            fetch("/senec?forceCharge=false")
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    if(json['error']) {
+                        this.checked = true;
+                        console.log(json['error']);
+                    }
+                });
+        }
+    });
 }
 
 function drawTestChart() {
@@ -111,7 +138,9 @@ function updateHelperHTML(json) {
     batteryChargeState.innerHTML = json['live_data']['battery_percentage'].toFixed(2) + " %";
     batteryVoltage.innerHTML = json['live_data']['battery_voltage'].toFixed(2) + " V";
     batteryCurrent.innerHTML = json['live_data']['battery_charge_current'].toFixed(2) + " A";
-    batteryPercentage.innerHTML = json['live_data']['battery_percentage'].toFixed(2) + " %"; 
+    batteryPercentage.innerHTML = json['live_data']['battery_percentage'].toFixed(2) + " %";
+
+    forceChargingToggle.checked = json['live_data']['force_charging_state']
 
     /* Statistics */
     //houseConsumptionStats.innerHTML = json['statistics']['house_consumption'].toFixed(2) + " kWh";

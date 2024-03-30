@@ -23,6 +23,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         self.type = "source"
         self.has_runtime = True
         self.current_data = {}
+        self.force_charging_state = False
         self.settings = { # Will be read from src/config/settings.json
             "plugin_path": "/senec",
             "device_ip": "IP_OF_YOUR_SENEC_DEVICE",
@@ -59,6 +60,14 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
             res = self.current_data
             resp.media = res
             return
+        try:
+            force_charge = req.params["forceCharge"]
+            self.force_charging_state = (force_charge == "true")
+            self.api.set_force_charge_battery(self.force_charging_state)
+            return
+        except KeyError:
+            pass
+
         resp.html = self.webserver.render_template("senec/index.html", viewmodel)
 
     def get_data(self):
@@ -77,7 +86,7 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
         }
 
     def __get_data_from_appliance(self):
-        appliance_values = self.api.get_values()
+        appliance_values = self.api.send_request()
         if not "error" in appliance_values:
             # Transform senec data structure to our data structure
             try:
@@ -93,7 +102,8 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                         "battery_charge_power"  : appliance_values["ENERGY"]["GUI_BAT_DATA_POWER"],                 # Battery charge power: negative if discharging, positiv if charging (W)
                         "battery_charge_current": appliance_values["ENERGY"]["GUI_BAT_DATA_CURRENT"],               # Battery charge current: negative if discharging, positiv if charging (A)
                         "battery_voltage"       : appliance_values["ENERGY"]["GUI_BAT_DATA_VOLTAGE"],               # Battery voltage (V)
-                        "battery_percentage"    : appliance_values["ENERGY"]["GUI_BAT_DATA_FUEL_CHARGE"]            # Remaining battery (percent)
+                        "battery_percentage"    : appliance_values["ENERGY"]["GUI_BAT_DATA_FUEL_CHARGE"],           # Remaining battery (percent)
+                        "force_charging_state"  : self.force_charging_state
                     },
                     "battery_information": {
                         "design_capacity"       : appliance_values["FACTORY"]["DESIGN_CAPACITY"],                   # Battery design capacity (Wh)
@@ -202,6 +212,19 @@ class SenecHomeV3Hybrid(plugin_collection.Plugin):
                             "title": "Remaining Time",
                             "type": "square",
                             "icons": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Settings",
+                    "blocks": [
+                        {
+                            "id": "forceChargingToggle",
+                            "title": "Force Charging",
+                            "type": "square_switch",
+                            "icons": [
+                                {"name": "power", "size": 40, "fill": "currentColor"}
+                            ]
                         }
                     ]
                 },

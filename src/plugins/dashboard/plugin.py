@@ -2,7 +2,6 @@
 Read and decode energy data from SENEC Home V3 Hybrid appliances.
 """
 import os
-import schedule
 import time
 import logging
 
@@ -24,6 +23,7 @@ class Dashboard(plugin_collection.Plugin):
         self.settings = {}
         self.sunChargingParking = False
         self.sunChargingGarage = False
+        self.forceCharging = False
         self.enoughPowerCounter = 0
         self.automaticChargingPowerAvailable = False
 
@@ -36,27 +36,28 @@ class Dashboard(plugin_collection.Plugin):
             self.settings = settings[type(self).__name__]
 
     def runtime(self, other_plugins):
+        self.senec = other_plugins.get_plugin("SenecHomeV3Hybrid")
+        self.goe = other_plugins.get_plugin("GoEcharger")
         # This is run permanently in the background
         while True:
             # Get data from (energy) producers and consumers
-            senec = other_plugins.get_plugin("SenecHomeV3Hybrid")
-            goe = other_plugins.get_plugin("GoEcharger")
 
             self.current_data = {
-                "house": senec.get_data(),
-                "wallbox1": goe.get_data(0),
-                "wallbox2": goe.get_data(1),
+                "house": self.senec.get_data(),
+                "wallbox1": self.goe.get_data(0),
+                "wallbox2": self.goe.get_data(1),
                 "sunChargingParking": self.sunChargingParking,
-                "sunChargingGarage": self.sunChargingGarage
+                "sunChargingGarage": self.sunChargingGarage,
+                "forceCharging": self.forceCharging
             }
 
             # Calculate if charging should be allowed:
             # If spare energy is > 3500W for 30s then allow charging
             # Where spare energy is: PV production - house consumption + currently charging
             if(self.sunChargingParking):
-                self.__automaticChargingExcessPower(goe, 0, 3500, 30)
+                self.__automaticChargingExcessPower(self.goe, 0, 3500, 30)
             if(self.sunChargingGarage):
-                self.__automaticChargingExcessPower(goe, 1, 3500, 30)
+                self.__automaticChargingExcessPower(self.goe, 1, 3500, 30)
             
             time.sleep(1)
 
@@ -116,6 +117,11 @@ class Dashboard(plugin_collection.Plugin):
                 self.sunChargingGarage = int(req.params['setAutomaticChargingGarage']) == 1
                 log.info(f"Sun charging for Garage set to {self.sunChargingGarage}")
                 return True
+            if('setForceCharging' in req.params):
+                self.forceCharging = int(req.params['setForceCharging']) == 1
+                log.info(f"Set force charging to {self.forceCharging}")
+                self.senec.api.set_force_charge_battery(self.forceCharging)
+                return True
         except KeyError:
             log.warn(f"Unknown parameter: {req.params}")
         return False
@@ -158,6 +164,15 @@ class Dashboard(plugin_collection.Plugin):
                             "type": "square_wide",
                             "icons": [
                                 {"name": "battery-full", "size": 48, "fill": "currentColor", "id": "batteryPowerIcon"}
+                            ]
+                        },
+                        {
+                            "id": "forceChargingCard",
+                            "switch_id": "forceCharging_switch",
+                            "title": "Force Charging",
+                            "type": "square_onoff",
+                            "icons": [
+                                {"name": "battery-charging", "size": 48, "fill": "currentColor"}
                             ]
                         }
                     ]

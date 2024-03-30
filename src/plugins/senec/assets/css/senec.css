@@ -34,6 +34,11 @@ main {
     text-align: left;
 }
 
+.square {
+    width: 10rem;
+    height: 9rem;
+}
+
 .button {
     background-color: whitesmoke;
     border: none;

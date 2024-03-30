@@ -35,7 +35,7 @@ class Senec():
         self.device_ip = device_ip
         self.read_api  = f"https://{device_ip}/lala.cgi"
 
-    def get_values(self, request_json = {}):
+    def send_request(self, request_json = {}):
         if not request_json: request_json = BASIC_REQUEST
         try:
             response = requests.post(self.read_api, json=request_json, verify=False)
@@ -64,7 +64,14 @@ class Senec():
 
     def get_all_values(self):
         request_json = {"STATISTIC": {},"ENERGY": {},"FEATURES": {},"LOG": {},"SYS_UPDATE": {},"WIZARD": {},"BMS": {},"BAT1": {},"BAT1OBJ1": {},"BAT1OBJ2": {},"BAT1OBJ3": {},"BAT1OBJ4": {},"PWR_UNIT": {},"PV1": {},"FACTORY": {},"GRIDCONFIG": {}}
-        return self.get_values(request_json)
+        return self.send_request(request_json)
+    
+    def set_force_charge_battery(self, forcecharge = True):
+        if forcecharge:
+            request_json = {"ENERGY":{"SAFE_CHARGE_FORCE":"u8_01","SAFE_CHARGE_PROHIBIT":"","SAFE_CHARGE_RUNNING":"","LI_STORAGE_MODE_START":"","LI_STORAGE_MODE_STOP":"","LI_STORAGE_MODE_RUNNING":""}}
+        else:
+            request_json = {"ENERGY":{"SAFE_CHARGE_FORCE":"","SAFE_CHARGE_PROHIBIT":"u8_01","SAFE_CHARGE_RUNNING":"","LI_STORAGE_MODE_START":"","LI_STORAGE_MODE_STOP":"","LI_STORAGE_MODE_RUNNING":""}}
+        return self.send_request(request_json)
 
     def __decode_data(self, data):
         return { k: self.__decode_data_helper(v) for k, v in data.items() }
@@ -241,5 +248,5 @@ SYSTEM_STATE_NAME = {
 
 if __name__ == "__main__":
     api = Senec("10.0.0.50")
-    #print(api.get_values())
+    #print(api.send_request())
     print(json.dumps(api.get_all_values()))
