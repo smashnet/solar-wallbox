@@ -14,7 +14,7 @@ class GoEcharger(plugin_collection.Plugin):
     
     def __init__(self):
         super().__init__()
-        self.title = "go-eCharger"
+        self.title = "Wallbox"
         self.description = "Read and write data of go-eCharger wallbox."
         self.pluginPackage = type(self).__module__.split('.')[1]
         self.type = "consumer"
